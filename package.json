@@ -1,0 +1,15 @@
+{
+  "name": "res-publica",
+  "version": "1.0.0",
+  "description": "Geopolitical & Life Simulation MMO",
+  "main": "index.html",
+  "scripts": {
+    "build": "mkdir -p dist && cp -r index.html src dist/"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
