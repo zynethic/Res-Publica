@@ -16,7 +16,7 @@
 </head>
 <body class="bg-adem text-slate-200 min-h-screen flex flex-col font-sans select-none overflow-x-hidden">
 
-  <!-- NOTIFIKASI MENGAMBANG GAYA IOS DYNAMIC ISLAND -->
+  <!-- BANNER NOTIFIKASI MENGAMBANG GAYA IOS -->
   <div id="ios-notification-container" class="fixed top-3 left-0 right-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 
   <!-- MODAL PENDAFTARAN E-KTP WARGA BARU -->
@@ -30,7 +30,7 @@
       <div class="space-y-3 text-xs">
         <div>
           <label class="block text-slate-400 mb-1">Nama Lengkap Pemain</label>
-          <input id="reg-name" type="text" placeholder="Contoh: Arinal Khako" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+          <input id="reg-name" type="text" placeholder="Contoh: Arinal Khako (atau admin)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
         </div>
         <div>
           <label class="block text-slate-400 mb-1">Alamat Email</label>
@@ -41,21 +41,31 @@
           <input id="reg-pass" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
         </div>
 
+        <!-- UPLOAD FOTO PROFIL MANUAL DARI GALERI HP -->
+        <div class="bg-slate-950 border border-slate-800 p-3 rounded-2xl flex items-center gap-3">
+          <div class="w-14 h-14 bg-slate-900 border border-slate-700 rounded-xl overflow-hidden flex items-center justify-center text-2xl flex-shrink-0">
+            <span id="avatar-upload-placeholder">📸</span>
+            <img id="avatar-upload-preview" class="w-full h-full object-cover hidden" alt="Preview">
+          </div>
+          <div class="flex-1">
+            <label class="block text-[11px] font-semibold text-teal-400 mb-1">Foto Profil Galeri / Kamera</label>
+            <input id="reg-file-avatar" type="file" accept="image/*" onchange="window.resHandleFileSelect(event)" class="text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:bg-teal-700 file:text-white">
+          </div>
+        </div>
+
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-slate-400 mb-1">Jenis Kelamin</label>
             <select id="reg-gender" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
-              <option>Laki-laki</option>
-              <option>Perempuan</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
             </select>
           </div>
           <div>
-            <label class="block text-slate-400 mb-1">Foto Profil Avatar</label>
-            <select id="reg-avatar" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
-              <option value="👨‍💼">👨‍💼 Jas Formal</option>
-              <option value="👷‍♂️">👷‍♂️ Teknisi Lapangan</option>
-              <option value="🥷">🥷 Warga Sipil</option>
-              <option value="👩‍💼">👩‍💼 Eksekutif</option>
+            <label class="block text-slate-400 mb-1">Opsi Avatar Bawaan</label>
+            <select id="reg-default-avatar-type" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
+              <option value="DEFAULT_GENDER">Otomatis Sesuai Gender</option>
+              <option value="MANUAL_GALLERY">Gunakan Foto Galeri</option>
             </select>
           </div>
         </div>
@@ -69,22 +79,13 @@
           </div>
         </div>
 
+        <!-- DROPDOWN DINAMIS DATABASE: 250 NEGARA, WILAYAH & KOTA -->
         <div>
-          <label class="block text-slate-400 mb-1">Negara, Wilayah & Daerah Tempat Tinggal</label>
+          <label class="block text-slate-400 mb-1">Negara, Wilayah & Daerah Domisili (Database Supabase)</label>
           <div class="grid grid-cols-3 gap-2">
-            <select id="reg-country" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
-              <option value="ID">Indonesia</option>
-              <option value="US">USA</option>
-              <option value="JP">Japan</option>
-            </select>
-            <select id="reg-region" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
-              <option value="ID-BT">Banten</option>
-              <option value="ID-JT">Jawa Tengah</option>
-            </select>
-            <select id="reg-city" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
-              <option value="Kota Tangerang">Tangerang</option>
-              <option value="Kota Tegal">Tegal</option>
-            </select>
+            <select id="reg-country" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white text-[11px]"></select>
+            <select id="reg-region" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white text-[11px]"></select>
+            <select id="reg-city" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white text-[11px]"></select>
           </div>
         </div>
 
@@ -154,8 +155,8 @@
           </div>
 
           <div class="flex gap-3 items-center">
-            <div id="ktp-avatar-box" class="w-16 h-20 bg-slate-950 border border-teal-500/20 rounded-xl flex items-center justify-center text-3xl shadow-inner">
-              👨‍💼
+            <div id="ktp-avatar-box" class="w-16 h-20 bg-slate-950 border border-teal-500/20 rounded-xl overflow-hidden flex items-center justify-center text-3xl shadow-inner">
+              👨
             </div>
             <div class="space-y-1 text-xs">
               <div><span class="text-slate-400 text-[10px]">NIK:</span> <span id="ktp-nik" class="font-mono text-teal-300 font-semibold"></span></div>
@@ -243,7 +244,7 @@
       <button onclick="window.resSwitchTab('tab-gov')" class="flex flex-col items-center text-slate-400">
         <span class="text-base">🏛️</span><span>APBN</span>
       </button>
-      <button onclick="window.resSwitchTab('tab-admin')" class="flex flex-col items-center text-teal-400/70">
+      <button id="btn-tab-admin-nav" onclick="window.resSwitchTab('tab-admin')" class="flex flex-col items-center text-teal-400/70 hidden">
         <span class="text-base">⚙️</span><span>Admin</span>
       </button>
     </nav>
@@ -256,17 +257,33 @@
       const { registerPlayer } = await import('./src/auth.js');
       const { initGame } = await import('./src/app.js');
       
+      const genderSelect = document.getElementById("reg-gender");
+      const avatarTypeSelect = document.getElementById("reg-default-avatar-type");
+      const countrySelect = document.getElementById("reg-country");
+      const regionSelect = document.getElementById("reg-region");
+      const citySelect = document.getElementById("reg-city");
+
+      const gender = genderSelect ? genderSelect.value : "Laki-laki";
+      const avatarType = avatarTypeSelect ? avatarTypeSelect.value : "DEFAULT_GENDER";
+      let finalAvatar = "";
+
+      if (avatarType === "MANUAL_GALLERY" && window.customAvatarData) {
+        finalAvatar = window.customAvatarData;
+      } else {
+        finalAvatar = gender === "Perempuan" ? "DEFAULT_FEMALE" : "DEFAULT_MALE";
+      }
+
       const success = await registerPlayer({
         username: document.getElementById("reg-name").value,
         email: document.getElementById("reg-email").value,
-        gender: document.getElementById("reg-gender").value,
-        avatar: document.getElementById("reg-avatar").value,
+        gender: gender,
+        avatarBase64: finalAvatar,
         birthDay: document.getElementById("reg-dob-d").value,
         birthMonth: document.getElementById("reg-dob-m").value,
         birthYear: document.getElementById("reg-dob-y").value,
-        country: document.getElementById("reg-country").value,
-        region: document.getElementById("reg-region").value,
-        city: document.getElementById("reg-city").value,
+        country: countrySelect ? countrySelect.value : "ID",
+        region: regionSelect ? regionSelect.value : "ID-BT",
+        city: citySelect ? citySelect.options[citySelect.selectedIndex]?.text || "Tangerang" : "Tangerang",
         agreedGuidelines: document.getElementById("reg-guidelines").checked
       });
 
