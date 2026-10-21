@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Res Publica</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { -webkit-tap-highlight-color: transparent; }
+    .bg-adem { background-color: #0b111a; }
+    .glass-ktp {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(13, 37, 56, 0.9));
+      border: 1px solid rgba(45, 212, 191, 0.3);
+    }
+  </style>
+</head>
+<body class="bg-adem text-slate-200 min-h-screen flex flex-col font-sans select-none overflow-x-hidden">
+
+  <!-- NOTIFIKASI MENGAMBANG GAYA IOS DYNAMIC ISLAND -->
+  <div id="ios-notification-container" class="fixed top-3 left-0 right-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
+
+  <!-- MODAL PENDAFTARAN E-KTP WARGA BARU -->
+  <div id="auth-screen" class="hidden fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-md p-4 flex items-center justify-center overflow-y-auto">
+    <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-3xl w-full max-w-md shadow-2xl space-y-4 my-auto">
+      <div class="text-center">
+        <h1 class="text-xl font-black tracking-wider text-teal-400">🏛️ RES PUBLICA</h1>
+        <p class="text-xs text-slate-400">Pendaftaran E-KTP & Kependudukan Global</p>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Nama Lengkap Pemain</label>
+          <input id="reg-name" type="text" placeholder="Contoh: Arinal Khako" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">Alamat Email</label>
+          <input id="reg-email" type="email" placeholder="nama@email.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">Kata Sandi</label>
+          <input id="reg-pass" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-400 mb-1">Jenis Kelamin</label>
+            <select id="reg-gender" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
+              <option>Laki-laki</option>
+              <option>Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Foto Profil Avatar</label>
+            <select id="reg-avatar" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
+              <option value="👨‍💼">👨‍💼 Jas Formal</option>
+              <option value="👷‍♂️">👷‍♂️ Teknisi Lapangan</option>
+              <option value="🥷">🥷 Warga Sipil</option>
+              <option value="👩‍💼">👩‍💼 Eksekutif</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Tanggal Lahir (Hari / Bulan / Tahun)</label>
+          <div class="grid grid-cols-3 gap-2">
+            <input id="reg-dob-d" type="number" min="1" max="31" value="15" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-center text-white">
+            <input id="reg-dob-m" type="number" min="1" max="12" value="6" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-center text-white">
+            <input id="reg-dob-y" type="number" min="1960" max="2015" value="2000" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-center text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Negara, Wilayah & Daerah Tempat Tinggal</label>
+          <div class="grid grid-cols-3 gap-2">
+            <select id="reg-country" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
+              <option value="ID">Indonesia</option>
+              <option value="US">USA</option>
+              <option value="JP">Japan</option>
+            </select>
+            <select id="reg-region" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
+              <option value="ID-BT">Banten</option>
+              <option value="ID-JT">Jawa Tengah</option>
+            </select>
+            <select id="reg-city" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
+              <option value="Kota Tangerang">Tangerang</option>
+              <option value="Kota Tegal">Tegal</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <input id="reg-guidelines" type="checkbox" class="w-4 h-4 rounded bg-slate-950 border-slate-800 text-teal-600">
+          <label for="reg-guidelines" class="text-[11px] text-slate-400">Saya menyetujui Pedoman Komunitas Res Publica</label>
+        </div>
+      </div>
+
+      <button id="btn-submit-registration" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition">
+        Terbitkan E-KTP & Terima Bantuan Rp 500.000
+      </button>
+    </div>
+  </div>
+
+  <!-- DASBOR GAME UTAMA -->
+  <div id="main-screen" class="flex-1 flex flex-col max-w-md mx-auto w-full pb-20">
+
+    <!-- HEADER STATUS ATAS -->
+    <header class="p-3 border-b border-slate-800/80 bg-slate-900/40 backdrop-blur-md flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-black text-teal-400 tracking-wider">RES PUBLICA</span>
+        <button id="btn-gp-link" onclick="window.resLinkGoogle()" class="text-[10px] bg-slate-850 border border-slate-700/60 text-slate-400 px-2 py-1 rounded-lg">🎮 Google Play</button>
+      </div>
+      <div class="text-right">
+        <div id="val-idr-txt" class="text-xs font-bold text-teal-400">Rp 0</div>
+        <div id="val-usd-txt" class="text-[10px] text-slate-400">$ 0.00</div>
+      </div>
+    </header>
+
+    <!-- STATUS VITALITAS LENGKAP -->
+    <section class="grid grid-cols-3 gap-2 p-3 bg-slate-900/20">
+      <div class="bg-slate-900/80 border border-slate-800/80 p-2 rounded-xl">
+        <div class="text-[10px] text-rose-400 font-semibold mb-1">❤️ DARAH</div>
+        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+          <div id="bar-health" class="bg-rose-500/90 h-full w-full"></div>
+        </div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800/80 p-2 rounded-xl">
+        <div class="flex justify-between text-[10px] text-amber-400 font-semibold mb-1">
+          <span>⚡ ENERGI</span><span id="val-energy-num">100%</span>
+        </div>
+        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+          <div id="bar-energy" class="bg-amber-400/90 h-full w-full"></div>
+        </div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800/80 p-2 rounded-xl">
+        <div class="text-[10px] text-teal-400 font-semibold mb-1">🍚 KENYANG</div>
+        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+          <div id="bar-hunger" class="bg-teal-400/90 h-full w-full"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KONTEN TAB NAVIGASI -->
+    <main class="flex-1 p-3 overflow-y-auto">
+
+      <!-- TAB 1: KTP DIGITAL RESMI -->
+      <div id="tab-ktp" class="space-y-4">
+        <div class="glass-ktp rounded-3xl p-4 shadow-xl">
+          <div class="flex justify-between items-start border-b border-teal-500/20 pb-2 mb-3">
+            <div>
+              <div class="text-[9px] tracking-widest text-teal-300/80 font-mono">REPUBLIK RES PUBLICA</div>
+              <div class="text-xs font-bold text-white tracking-wider">KARTU TANDA PENDUDUK DIGITAL</div>
+            </div>
+            <span class="text-xl">🇮🇩</span>
+          </div>
+
+          <div class="flex gap-3 items-center">
+            <div id="ktp-avatar-box" class="w-16 h-20 bg-slate-950 border border-teal-500/20 rounded-xl flex items-center justify-center text-3xl shadow-inner">
+              👨‍💼
+            </div>
+            <div class="space-y-1 text-xs">
+              <div><span class="text-slate-400 text-[10px]">NIK:</span> <span id="ktp-nik" class="font-mono text-teal-300 font-semibold"></span></div>
+              <div><span class="text-slate-400 text-[10px]">Nama:</span> <span id="ktp-name" class="font-bold text-white"></span></div>
+              <div><span class="text-slate-400 text-[10px]">Tgl Lahir:</span> <span id="ktp-dob" class="text-slate-300"></span></div>
+              <div><span class="text-slate-400 text-[10px]">Jenis Kelamin:</span> <span id="ktp-gender" class="text-slate-300"></span></div>
+              <div><span class="text-slate-400 text-[10px]">Kewarganegaraan:</span> <span id="ktp-country" class="text-amber-400 font-medium"></span></div>
+              <div><span class="text-slate-400 text-[10px]">Domisili:</span> <span id="ktp-domicile" class="text-slate-300"></span></div>
+              <div><span class="text-slate-400 text-[10px]">Profesi:</span> <span id="ktp-role" class="text-teal-400 font-bold"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="window.resEat()" class="bg-slate-900 border border-slate-800 py-3 rounded-2xl text-xs font-bold text-teal-400 active:scale-95 transition">🍚 Makan Beras</button>
+          <button onclick="window.resWork()" class="bg-slate-900 border border-slate-800 py-3 rounded-2xl text-xs font-bold text-amber-400 active:scale-95 transition">⚒️ Kerja Shift Harian</button>
+        </div>
+      </div>
+
+      <!-- TAB 2: PETA WILAYAH & BANDARA INTERNASIONAL -->
+      <div id="tab-map" class="hidden space-y-3">
+        <h3 class="text-xs font-bold text-teal-400">✈️ Bandara & Pelabuhan Imigrasi Internasional</h3>
+        <p class="text-[11px] text-slate-400 leading-relaxed">Terbang ke negara lain di dunia untuk urusan diplomasi atau pekerjaan luar negeri (Tiket: $ 45.00 USD).</p>
+        <div id="airport-nations-list" class="space-y-2"></div>
+      </div>
+
+      <!-- TAB 3: BURSA KERJA KOTA -->
+      <div id="tab-jobs" class="hidden space-y-3">
+        <h3 class="text-xs font-bold text-slate-300">🏢 Bursa Lowongan Kerja Kota</h3>
+        <div id="job-vacancy-list" class="space-y-2"></div>
+      </div>
+
+      <!-- TAB 4: LIVE CHAT MULTI-SALURAN -->
+      <div id="tab-chat" class="hidden flex flex-col h-[400px] bg-slate-900/80 border border-slate-800 rounded-3xl p-3">
+        <div class="flex gap-1 border-b border-slate-800 pb-2 mb-2 overflow-x-auto text-[11px]">
+          <button onclick="window.resChangeChatChannel('KOTA')" class="px-2.5 py-1 bg-teal-700 text-white rounded-lg">🏘️ Kota</button>
+          <button onclick="window.resChangeChatChannel('WILAYAH')" class="px-2.5 py-1 bg-slate-800 text-slate-400 rounded-lg">📍 Wilayah</button>
+          <button onclick="window.resChangeChatChannel('NEGARA')" class="px-2.5 py-1 bg-slate-800 text-slate-400 rounded-lg">🇮🇩 Negara</button>
+          <button onclick="window.resChangeChatChannel('GLOBAL')" class="px-2.5 py-1 bg-slate-800 text-slate-400 rounded-lg">🌐 Global</button>
+          <button onclick="window.resChangeChatChannel('JOBDESK')" class="px-2.5 py-1 bg-slate-800 text-slate-400 rounded-lg">🛠️ Profesi</button>
+        </div>
+        <div id="chat-feed-box" class="flex-1 overflow-y-auto space-y-2 mb-2 pr-1"></div>
+        <div class="flex gap-2">
+          <input id="chat-input-text" type="text" placeholder="Ketik pesan..." class="flex-1 bg-slate-950 border border-slate-800 text-xs px-3 py-2 rounded-xl text-white">
+          <button onclick="window.resSendChat()" class="px-4 bg-teal-700 text-white text-xs font-bold rounded-xl active:scale-95 transition">Kirim</button>
+        </div>
+      </div>
+
+      <!-- TAB 5: APBN & PEMERINTAHAN (TERKUNCI KHUSUS PEJABAT) -->
+      <div id="tab-gov" class="hidden space-y-3">
+        <div id="apbn-panel-container"></div>
+      </div>
+
+      <!-- TAB 6: ADMIN TESTER (KHUSUS PENGEMBANG) -->
+      <div id="tab-admin" class="hidden space-y-3">
+        <div class="bg-slate-900/90 border border-teal-500/30 p-4 rounded-3xl space-y-3">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+            <span class="text-xs font-bold text-teal-400">🛠️ PUSAT KONTROL ADMIN</span>
+            <span class="text-[10px] bg-teal-950 text-teal-400 border border-teal-800 px-2 py-0.5 rounded">DEV MODE</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Ubah peran seketika untuk menguji coba fitur Menkeu, Sidang DPR, Gubernur, maupun Panglima TNI:</p>
+          <div id="admin-role-options" class="flex flex-wrap gap-1.5"></div>
+          <button onclick="window.resGrantAdminFunds()" class="w-full py-2 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-teal-300 rounded-xl text-xs font-bold mt-2">
+            💰 Tambah Saldo Rp 1 Miliar & Vitalitas 100%
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION BAR -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900/95 border-t border-slate-800/80 backdrop-blur-md grid grid-cols-6 py-2 text-center text-[9px]">
+      <button onclick="window.resSwitchTab('tab-ktp')" class="flex flex-col items-center text-teal-400">
+        <span class="text-base">🪪</span><span>E-KTP</span>
+      </button>
+      <button onclick="window.resSwitchTab('tab-map')" class="flex flex-col items-center text-slate-400">
+        <span class="text-base">✈️</span><span>Bandara</span>
+      </button>
+      <button onclick="window.resSwitchTab('tab-jobs')" class="flex flex-col items-center text-slate-400">
+        <span class="text-base">💼</span><span>Kerja</span>
+      </button>
+      <button onclick="window.resSwitchTab('tab-chat')" class="flex flex-col items-center text-slate-400">
+        <span class="text-base">💬</span><span>Chat</span>
+      </button>
+      <button onclick="window.resSwitchTab('tab-gov')" class="flex flex-col items-center text-slate-400">
+        <span class="text-base">🏛️</span><span>APBN</span>
+      </button>
+      <button onclick="window.resSwitchTab('tab-admin')" class="flex flex-col items-center text-teal-400/70">
+        <span class="text-base">⚙️</span><span>Admin</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script type="module" src="src/app.js"></script>
+  <script>
+    document.getElementById("btn-submit-registration").onclick = async () => {
+      const { registerPlayer } = await import('./src/auth.js');
+      const { initGame } = await import('./src/app.js');
+      
+      const success = await registerPlayer({
+        username: document.getElementById("reg-name").value,
+        email: document.getElementById("reg-email").value,
+        gender: document.getElementById("reg-gender").value,
+        avatar: document.getElementById("reg-avatar").value,
+        birthDay: document.getElementById("reg-dob-d").value,
+        birthMonth: document.getElementById("reg-dob-m").value,
+        birthYear: document.getElementById("reg-dob-y").value,
+        country: document.getElementById("reg-country").value,
+        region: document.getElementById("reg-region").value,
+        city: document.getElementById("reg-city").value,
+        agreedGuidelines: document.getElementById("reg-guidelines").checked
+      });
+
+      if (success) initGame();
+    };
+  </script>
+</body>
+</html>
