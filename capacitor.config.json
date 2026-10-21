@@ -1,0 +1,6 @@
+{
+  "appId": "com.zynethic.respublica",
+  "appName": "Res Publica",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
