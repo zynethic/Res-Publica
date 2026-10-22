@@ -11,7 +11,7 @@ export async function loadCountries() {
   try {
     const { data, error } = await supabase
       .from('countries')
-      .select('code, name, flag_url, currency_code, currency_symbol')
+      .select('code, name, flag_url, currency_code, currency_symbol, apbn_balance')
       .order('name', { ascending: true });
     if (error) throw error;
     return data || [];
@@ -29,7 +29,7 @@ export async function loadRegions(countryCode) {
   try {
     const { data, error } = await supabase
       .from('regions')
-      .select('id, name, type, primary_commodity')
+      .select('id, name, type, primary_commodity, apbd_balance, umr_8h_shift')
       .eq('country_code', countryCode)
       .order('name', { ascending: true });
     if (error) throw error;
@@ -48,7 +48,7 @@ export async function loadCities(regionId) {
   try {
     const { data, error } = await supabase
       .from('cities')
-      .select('id, name, type')
+      .select('id, name, type, umr_8h_shift')
       .eq('region_id', regionId)
       .order('name', { ascending: true });
     if (error) throw error;
@@ -60,7 +60,7 @@ export async function loadCities(regionId) {
 }
 
 /**
- * 4. Verifikasi Masuk (Login) dengan Gmail & Password dari Database
+ * 4. Verifikasi Masuk (Login) dengan Gmail & Password
  */
 export async function loginPlayer(email, password) {
   if (!navigator.onLine) {
@@ -77,7 +77,6 @@ export async function loginPlayer(email, password) {
   }
 
   try {
-    // 1. Verifikasi kredensial dari tabel players
     const { data: playerData, error: playerError } = await supabase
       .from('players')
       .select('*')
@@ -94,19 +93,17 @@ export async function loginPlayer(email, password) {
       return false;
     }
 
-    // 2. Sinkronkan sesi login Supabase Auth (jika ada)
     await supabase.auth.signInWithPassword({
       email: cleanEmail,
       password: cleanPass
     }).catch(() => null);
 
-    // 3. Ambil saldo terkini dari tabel wallets
     const { data: walletData } = await supabase
       .from('wallets')
       .select('currency_code, balance')
       .eq('player_id', playerData.id);
 
-    const loadedWallets = { IDR: 0.0, USD: 0.0 };
+    const loadedWallets = { IDR: 500000.0, USD: 650.0 };
     if (walletData && walletData.length > 0) {
       walletData.forEach(w => {
         loadedWallets[w.currency_code] = Number(w.balance);
@@ -115,7 +112,8 @@ export async function loginPlayer(email, password) {
 
     const isAdmin = playerData.role === "PRESIDEN" || 
                     cleanEmail === "admin@zynethic.xyz" || 
-                    playerData.username.toLowerCase() === "admin";
+                    playerData.username.toLowerCase() === "admin" ||
+                    playerData.username.toLowerCase() === "zynethic";
 
     const cityShort = (playerData.current_city || "CTR").replace(/[^A-Z0-9]/gi, "").substring(0, 3).toUpperCase();
     const generatedNIK = `${playerData.citizenship}-${cityShort}-20000615-${playerData.id.substring(0, 4)}`;
@@ -125,8 +123,8 @@ export async function loginPlayer(email, password) {
       username: playerData.username,
       email: playerData.email,
       nik: generatedNIK,
-      gender: "Laki-laki",
-      birth_date: "2000-06-15",
+      gender: playerData.gender || "Laki-laki",
+      birth_date: playerData.birth_date || "2000-06-15",
       avatar_url: playerData.avatar_url || (isAdmin ? "👨‍💼" : "👨"),
       citizenship: playerData.citizenship,
       current_country: playerData.current_country,
@@ -134,12 +132,19 @@ export async function loginPlayer(email, password) {
       current_city: playerData.current_city,
       role: playerData.role,
       is_admin: isAdmin,
-      energy: playerData.energy ?? 100,
+      level: playerData.level || 2,
+      xp: playerData.xp || 25,
+      max_xp: playerData.max_xp || 29,
+      energy: playerData.energy ?? 105,
+      max_energy: playerData.max_energy || 105,
       health: playerData.health ?? 100,
       hunger: playerData.hunger ?? 100,
+      gold: playerData.gold_balance ? Number(playerData.gold_balance) : (isAdmin ? 10000.0 : 81.0),
+      daily_bread_quota: playerData.daily_bread_quota ?? 10,
       wallets: loadedWallets,
+      food_inventory: { T1: 1, T2: 0, T3: 0, T4: 0, T5: 0 },
       inventory: { BRS_PKP: 10.0, FUL_BNS: 5.0 },
-      is_google_linked: false
+      is_google_linked: Boolean(playerData.is_google_linked)
     };
 
     state.isAdminMode = isAdmin;
@@ -159,94 +164,7 @@ export async function loginPlayer(email, password) {
 }
 
 /**
- * 5. Kirim Permintaan Reset Password ke Gmail Pemain
- */
-export async function sendForgotPasswordEmail(email) {
-  if (!navigator.onLine) {
-    showNotification("Wajib Online", "Koneksi internet terputus!", false);
-    return false;
-  }
-
-  const cleanEmail = (email || "").trim().toLowerCase();
-  if (!cleanEmail) {
-    showNotification("Input Kurang", "Masukkan alamat Gmail Anda!", false);
-    return false;
-  }
-
-  try {
-    const { data: userExists } = await supabase
-      .from('players')
-      .select('id')
-      .eq('email', cleanEmail)
-      .maybeSingle();
-
-    if (!userExists) {
-      showNotification("Email Tidak Terdaftar", "Alamat Gmail tidak ditemukan dalam database!", false);
-      return false;
-    }
-
-    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-      redirectTo: window.location.origin
-    });
-
-    if (error) {
-      console.warn("Supabase Auth email notice:", error.message);
-    }
-
-    sessionStorage.setItem("res_publica_resetting_email", cleanEmail);
-
-    showNotification(
-      "Email Terkirim",
-      `Tautan pemulihan dikirim ke ${cleanEmail}. Periksa folder Kotak Masuk atau Spam Gmail Anda!`,
-      true
-    );
-    return true;
-  } catch (err) {
-    showNotification("Gagal Mengirim", err.message, false);
-    return false;
-  }
-}
-
-/**
- * 6. Perbarui Kata Sandi Baru di Database
- */
-export async function updateNewPassword(newPassword) {
-  const cleanPass = (newPassword || "").trim();
-  if (cleanPass.length < 6) {
-    showNotification("Kata Sandi Lemah", "Kata sandi minimal 6 karakter!", false);
-    return false;
-  }
-
-  const targetEmail = sessionStorage.getItem("res_publica_resetting_email") || 
-                      (state.player ? state.player.email : "");
-
-  if (!targetEmail) {
-    showNotification("Sesi Kedaluwarsa", "Ulangi proses Lupa Kata Sandi dari awal!", false);
-    return false;
-  }
-
-  try {
-    const { error: dbError } = await supabase
-      .from('players')
-      .update({ password: cleanPass })
-      .eq('email', targetEmail);
-
-    if (dbError) throw dbError;
-
-    await supabase.auth.updateUser({ password: cleanPass }).catch(() => null);
-
-    sessionStorage.removeItem("res_publica_resetting_email");
-
-    showNotification("Kata Sandi Diperbarui", "Kata sandi baru berhasil disimpan! Silakan masuk kembali.", true);
-    return true;
-  } catch (err) {
-    showNotification("Gagal Memperbarui", err.message, false);
-    return false;
-  }
-}
-
-/**
- * 7. Pendaftaran Akun Warga Baru & Pembuatan E-KTP
+ * 5. Pendaftaran Akun Warga Baru & Pembuatan E-KTP
  */
 export async function registerPlayer(formData) {
   if (!formData.agreedGuidelines) {
@@ -282,7 +200,7 @@ export async function registerPlayer(formData) {
 
   const initialWallets = {
     IDR: isID ? (isAdminAccount ? 10000000000.0 : CONFIG.STARTER_CASH_IDR) : 0.0,
-    USD: isID ? 50.0 : (isAdminAccount ? 500000.0 : CONFIG.STARTER_CASH_USD)
+    USD: isID ? 50.0 : (isAdminAccount ? 500000.0 : 650.0)
   };
 
   let resolvedAvatar = formData.avatarBase64;
@@ -304,10 +222,17 @@ export async function registerPlayer(formData) {
     current_city: formData.city,
     role: initialRole,
     is_admin: isAdminAccount,
-    energy: 100,
+    level: 2,
+    xp: 25,
+    max_xp: 29,
+    energy: 105,
+    max_energy: 105,
     health: 100,
     hunger: 100,
+    gold: isAdminAccount ? 10000.0 : 81.0,
+    daily_bread_quota: 10,
     wallets: initialWallets,
+    food_inventory: { T1: 1, T2: 0, T3: 0, T4: 0, T5: 0 },
     inventory: { BRS_PKP: 10.0, FUL_BNS: 5.0 },
     has_voted: false,
     is_google_linked: false
@@ -328,22 +253,24 @@ export async function registerPlayer(formData) {
       current_region: newPlayer.current_region,
       current_city: newPlayer.current_city,
       role: newPlayer.role,
-      energy: newPlayer.energy,
-      health: newPlayer.health,
-      hunger: newPlayer.hunger
+      level: 2,
+      xp: 25,
+      max_xp: 29,
+      energy: 105,
+      max_energy: 105,
+      health: 100,
+      hunger: 100,
+      gold_balance: newPlayer.gold
     }]).select();
 
     if (error) throw error;
 
     newPlayer.id = data && data[0] ? data[0].id : "PLY-" + randomSuffix;
 
-    const primaryCurrency = isID ? "IDR" : "USD";
-    const primaryBalance = isID ? initialWallets.IDR : initialWallets.USD;
-    await supabase.from('wallets').upsert([{
-      player_id: newPlayer.id,
-      currency_code: primaryCurrency,
-      balance: primaryBalance
-    }], { onConflict: 'player_id,currency_code' });
+    await supabase.from('wallets').upsert([
+      { player_id: newPlayer.id, currency_code: 'USD', balance: newPlayer.wallets.USD },
+      { player_id: newPlayer.id, currency_code: 'IDR', balance: newPlayer.wallets.IDR }
+    ], { onConflict: 'player_id,currency_code' });
 
     state.player = newPlayer;
     state.isAdminMode = isAdminAccount;
@@ -364,11 +291,94 @@ export async function registerPlayer(formData) {
 }
 
 /**
+ * 6. Kirim Permintaan Reset Password ke Gmail Pemain
+ */
+export async function sendForgotPasswordEmail(email) {
+  if (!navigator.onLine) {
+    showNotification("Wajib Online", "Koneksi internet terputus!", false);
+    return false;
+  }
+
+  const cleanEmail = (email || "").trim().toLowerCase();
+  if (!cleanEmail) {
+    showNotification("Input Kurang", "Masukkan alamat Gmail Anda!", false);
+    return false;
+  }
+
+  try {
+    const { data: userExists } = await supabase
+      .from('players')
+      .select('id')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    if (!userExists) {
+      showNotification("Email Tidak Terdaftar", "Alamat Gmail tidak ditemukan dalam database!", false);
+      return false;
+    }
+
+    await supabase.auth.resetPasswordForEmail(cleanEmail, {
+      redirectTo: window.location.origin
+    }).catch(() => null);
+
+    sessionStorage.setItem("res_publica_resetting_email", cleanEmail);
+
+    showNotification(
+      "Email Terkirim",
+      `Tautan pemulihan dikirim ke ${cleanEmail}. Periksa folder Kotak Masuk atau Spam Gmail Anda!`,
+      true
+    );
+    return true;
+  } catch (err) {
+    showNotification("Gagal Mengirim", err.message, false);
+    return false;
+  }
+}
+
+/**
+ * 7. Perbarui Kata Sandi Baru di Database
+ */
+export async function updateNewPassword(newPassword) {
+  const cleanPass = (newPassword || "").trim();
+  if (cleanPass.length < 6) {
+    showNotification("Kata Sandi Lemah", "Kata sandi minimal 6 karakter!", false);
+    return false;
+  }
+
+  const targetEmail = sessionStorage.getItem("res_publica_resetting_email") || 
+                      (state.player ? state.player.email : "");
+
+  if (!targetEmail) {
+    showNotification("Sesi Kedaluwarsa", "Ulangi proses Lupa Kata Sandi dari awal!", false);
+    return false;
+  }
+
+  try {
+    const { error: dbError } = await supabase
+      .from('players')
+      .update({ password: cleanPass })
+      .eq('email', targetEmail);
+
+    if (dbError) throw dbError;
+
+    await supabase.auth.updateUser({ password: cleanPass }).catch(() => null);
+    sessionStorage.removeItem("res_publica_resetting_email");
+
+    showNotification("Kata Sandi Diperbarui", "Kata sandi baru berhasil disimpan! Silakan masuk kembali.", true);
+    return true;
+  } catch (err) {
+    showNotification("Gagal Memperbarui", err.message, false);
+    return false;
+  }
+}
+
+/**
  * 8. Keluar dari Akun (Logout)
  */
 export function logoutPlayer() {
   state.player = null;
   state.isAdminMode = false;
+  localStorage.removeItem("res_publica_player_parlamentum");
   localStorage.removeItem("res_publica_player");
   localStorage.removeItem("res_publica_admin_mode");
   supabase.auth.signOut().catch(() => null);
