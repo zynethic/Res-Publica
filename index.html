@@ -19,29 +19,88 @@
   <!-- BANNER NOTIFIKASI MENGAMBANG GAYA IOS -->
   <div id="ios-notification-container" class="fixed top-3 left-0 right-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 
-  <!-- MODAL PENDAFTARAN E-KTP WARGA BARU -->
+  <!-- MODAL AUTENTIKASI UTAMA -->
   <div id="auth-screen" class="hidden fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-md p-4 flex items-center justify-center overflow-y-auto">
     <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-3xl w-full max-w-md shadow-2xl space-y-4 my-auto">
+      
       <div class="text-center">
         <h1 class="text-xl font-black tracking-wider text-teal-400">🏛️ RES PUBLICA</h1>
-        <p class="text-xs text-slate-400">Pendaftaran E-KTP & Kependudukan Global</p>
+        <p class="text-xs text-slate-400">Simulasi Geopolitik & Kependudukan Global</p>
       </div>
 
-      <div class="space-y-3 text-xs">
+      <!-- TAB SWITCHER: MASUK / DAFTAR -->
+      <div id="auth-tab-buttons" class="grid grid-cols-2 bg-slate-950 p-1 rounded-2xl border border-slate-800 text-xs font-bold text-center">
+        <button id="tab-btn-login" onclick="window.resSwitchAuthMode('login')" class="py-2 rounded-xl bg-teal-700 text-white transition">Masuk</button>
+        <button id="tab-btn-register" onclick="window.resSwitchAuthMode('register')" class="py-2 rounded-xl text-slate-400 transition">Buat E-KTP</button>
+      </div>
+
+      <!-- 1. FORM MASUK (LOGIN) -->
+      <div id="form-login-section" class="space-y-3 text-xs">
         <div>
-          <label class="block text-slate-400 mb-1">Nama Lengkap Pemain</label>
-          <input id="reg-name" type="text" placeholder="Contoh: Arinal Khako (atau admin)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+          <label class="block text-slate-400 mb-1">Email Gmail</label>
+          <input id="login-email" type="email" placeholder="admin@zynethic.xyz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
         </div>
         <div>
-          <label class="block text-slate-400 mb-1">Alamat Email</label>
-          <input id="reg-email" type="email" placeholder="nama@email.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-slate-400">Kata Sandi</label>
+            <button onclick="window.resSwitchAuthMode('forgot')" class="text-teal-400 text-[11px] hover:underline">Lupa Kata Sandi?</button>
+          </div>
+          <input id="login-pass" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+        </div>
+        <button id="btn-submit-login" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition mt-2">
+          Masuk ke Permainan
+        </button>
+      </div>
+
+      <!-- 2. FORM LUPA KATA SANDI -->
+      <div id="form-forgot-section" class="hidden space-y-3 text-xs">
+        <p class="text-slate-400 text-[11px]">Masukkan alamat Gmail yang terdaftar. Kami akan mengirimkan tautan reset kata sandi langsung ke email Anda.</p>
+        <div>
+          <label class="block text-slate-400 mb-1">Email Gmail Terdaftar</label>
+          <input id="forgot-email" type="email" placeholder="nama@gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+        </div>
+        <button id="btn-submit-forgot" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition">
+          Kirim Tautan Reset ke Gmail
+        </button>
+        <button onclick="window.resSwitchAuthMode('login')" class="w-full py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-400 text-xs">
+          Kembali ke Menu Masuk
+        </button>
+      </div>
+
+      <!-- 3. FORM BUAT KATA SANDI BARU -->
+      <div id="form-reset-section" class="hidden space-y-3 text-xs">
+        <div class="bg-teal-950/40 border border-teal-500/30 p-2.5 rounded-xl text-teal-300 text-[11px]">
+          Verifikasi Gmail berhasil! Masukkan kata sandi baru untuk akun Anda.
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">Kata Sandi Baru</label>
+          <input id="reset-new-pass" type="password" placeholder="Minimal 6 karakter" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">Konfirmasi Kata Sandi Baru</label>
+          <input id="reset-confirm-pass" type="password" placeholder="Ulangi kata sandi baru" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+        </div>
+        <button id="btn-submit-reset-pass" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition">
+          Simpan Kata Sandi & Masuk
+        </button>
+      </div>
+
+      <!-- 4. FORM REGISTRASI E-KTP -->
+      <div id="form-register-section" class="hidden space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Nama Lengkap Pemain</label>
+          <input id="reg-name" type="text" placeholder="Contoh: Arinal Khako" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">Alamat Email Gmail</label>
+          <input id="reg-email" type="email" placeholder="nama@gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
         </div>
         <div>
           <label class="block text-slate-400 mb-1">Kata Sandi</label>
           <input id="reg-pass" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
         </div>
 
-        <!-- UPLOAD FOTO PROFIL MANUAL DARI GALERI HP -->
+        <!-- UPLOAD FOTO PROFIL GALERI -->
         <div class="bg-slate-950 border border-slate-800 p-3 rounded-2xl flex items-center gap-3">
           <div class="w-14 h-14 bg-slate-900 border border-slate-700 rounded-xl overflow-hidden flex items-center justify-center text-2xl flex-shrink-0">
             <span id="avatar-upload-placeholder">📸</span>
@@ -62,10 +121,10 @@
             </select>
           </div>
           <div>
-            <label class="block text-slate-400 mb-1">Opsi Avatar Bawaan</label>
+            <label class="block text-slate-400 mb-1">Avatar Bawaan</label>
             <select id="reg-default-avatar-type" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
-              <option value="DEFAULT_GENDER">Otomatis Sesuai Gender</option>
-              <option value="MANUAL_GALLERY">Gunakan Foto Galeri</option>
+              <option value="DEFAULT_GENDER">Otomatis Gender</option>
+              <option value="MANUAL_GALLERY">Foto Galeri</option>
             </select>
           </div>
         </div>
@@ -79,9 +138,9 @@
           </div>
         </div>
 
-        <!-- DROPDOWN DINAMIS DATABASE: 250 NEGARA, WILAYAH & KOTA -->
+        <!-- DROPDOWN WILAYAH DINAMIS DATABASE -->
         <div>
-          <label class="block text-slate-400 mb-1">Negara, Wilayah & Daerah Domisili (Database Supabase)</label>
+          <label class="block text-slate-400 mb-1">Negara, Wilayah & Daerah Domisili</label>
           <div class="grid grid-cols-3 gap-2">
             <select id="reg-country" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white text-[11px]"></select>
             <select id="reg-region" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white text-[11px]"></select>
@@ -93,11 +152,12 @@
           <input id="reg-guidelines" type="checkbox" class="w-4 h-4 rounded bg-slate-950 border-slate-800 text-teal-600">
           <label for="reg-guidelines" class="text-[11px] text-slate-400">Saya menyetujui Pedoman Komunitas Res Publica</label>
         </div>
+
+        <button id="btn-submit-registration" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition">
+          Terbitkan E-KTP & Terima Bantuan Rp 500.000
+        </button>
       </div>
 
-      <button id="btn-submit-registration" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition">
-        Terbitkan E-KTP & Terima Bantuan Rp 500.000
-      </button>
     </div>
   </div>
 
@@ -110,9 +170,12 @@
         <span class="text-sm font-black text-teal-400 tracking-wider">RES PUBLICA</span>
         <button id="btn-gp-link" onclick="window.resLinkGoogle()" class="text-[10px] bg-slate-850 border border-slate-700/60 text-slate-400 px-2 py-1 rounded-lg">🎮 Google Play</button>
       </div>
-      <div class="text-right">
-        <div id="val-idr-txt" class="text-xs font-bold text-teal-400">Rp 0</div>
-        <div id="val-usd-txt" class="text-[10px] text-slate-400">$ 0.00</div>
+      <div class="flex items-center gap-2">
+        <div class="text-right">
+          <div id="val-idr-txt" class="text-xs font-bold text-teal-400">Rp 0</div>
+          <div id="val-usd-txt" class="text-[10px] text-slate-400">$ 0.00</div>
+        </div>
+        <button onclick="window.resLogout()" title="Keluar Akun" class="p-1.5 bg-slate-900 border border-rose-500/30 text-rose-400 rounded-xl text-xs active:scale-90 transition">🚪</button>
       </div>
     </header>
 
@@ -253,6 +316,80 @@
 
   <script type="module" src="src/app.js"></script>
   <script>
+    window.resSwitchAuthMode = (mode) => {
+      const loginSec = document.getElementById("form-login-section");
+      const regSec = document.getElementById("form-register-section");
+      const forgotSec = document.getElementById("form-forgot-section");
+      const resetSec = document.getElementById("form-reset-section");
+      const tabBtns = document.getElementById("auth-tab-buttons");
+      const btnLog = document.getElementById("tab-btn-login");
+      const btnReg = document.getElementById("tab-btn-register");
+
+      loginSec.classList.add("hidden");
+      regSec.classList.add("hidden");
+      forgotSec.classList.add("hidden");
+      resetSec.classList.add("hidden");
+
+      if (mode === 'login') {
+        tabBtns.classList.remove("hidden");
+        loginSec.classList.remove("hidden");
+        btnLog.className = "py-2 rounded-xl bg-teal-700 text-white transition";
+        btnReg.className = "py-2 rounded-xl text-slate-400 transition";
+      } else if (mode === 'register') {
+        tabBtns.classList.remove("hidden");
+        regSec.classList.remove("hidden");
+        btnReg.className = "py-2 rounded-xl bg-teal-700 text-white transition";
+        btnLog.className = "py-2 rounded-xl text-slate-400 transition";
+      } else if (mode === 'forgot') {
+        tabBtns.classList.add("hidden");
+        forgotSec.classList.remove("hidden");
+      } else if (mode === 'reset') {
+        tabBtns.classList.add("hidden");
+        resetSec.classList.remove("hidden");
+      }
+    };
+
+    // Eksekusi Masuk (Login)
+    document.getElementById("btn-submit-login").onclick = async () => {
+      const { loginPlayer } = await import('./src/auth.js');
+      const { initGame } = await import('./src/app.js');
+      
+      const email = document.getElementById("login-email").value;
+      const pass = document.getElementById("login-pass").value;
+
+      const success = await loginPlayer(email, pass);
+      if (success) initGame();
+    };
+
+    // Eksekusi Lupa Password
+    document.getElementById("btn-submit-forgot").onclick = async () => {
+      const { sendForgotPasswordEmail } = await import('./src/auth.js');
+      const email = document.getElementById("forgot-email").value;
+      const success = await sendForgotPasswordEmail(email);
+      if (success) {
+        window.resSwitchAuthMode('reset');
+      }
+    };
+
+    // Eksekusi Simpan Kata Sandi Baru
+    document.getElementById("btn-submit-reset-pass").onclick = async () => {
+      const { updateNewPassword } = await import('./src/auth.js');
+      const p1 = document.getElementById("reset-new-pass").value;
+      const p2 = document.getElementById("reset-confirm-pass").value;
+
+      if (p1 !== p2) {
+        const { showNotification } = await import('./src/notifications.js');
+        showNotification("Tidak Cocok", "Konfirmasi kata sandi baru tidak cocok!", false);
+        return;
+      }
+
+      const success = await updateNewPassword(p1);
+      if (success) {
+        window.resSwitchAuthMode('login');
+      }
+    };
+
+    // Eksekusi Pendaftaran (E-KTP)
     document.getElementById("btn-submit-registration").onclick = async () => {
       const { registerPlayer } = await import('./src/auth.js');
       const { initGame } = await import('./src/app.js');
@@ -265,17 +402,14 @@
 
       const gender = genderSelect ? genderSelect.value : "Laki-laki";
       const avatarType = avatarTypeSelect ? avatarTypeSelect.value : "DEFAULT_GENDER";
-      let finalAvatar = "";
-
-      if (avatarType === "MANUAL_GALLERY" && window.customAvatarData) {
-        finalAvatar = window.customAvatarData;
-      } else {
-        finalAvatar = gender === "Perempuan" ? "DEFAULT_FEMALE" : "DEFAULT_MALE";
-      }
+      let finalAvatar = (avatarType === "MANUAL_GALLERY" && window.customAvatarData) 
+        ? window.customAvatarData 
+        : (gender === "Perempuan" ? "DEFAULT_FEMALE" : "DEFAULT_MALE");
 
       const success = await registerPlayer({
         username: document.getElementById("reg-name").value,
         email: document.getElementById("reg-email").value,
+        password: document.getElementById("reg-pass").value,
         gender: gender,
         avatarBase64: finalAvatar,
         birthDay: document.getElementById("reg-dob-d").value,
@@ -283,7 +417,7 @@
         birthYear: document.getElementById("reg-dob-y").value,
         country: countrySelect ? countrySelect.value : "ID",
         region: regionSelect ? regionSelect.value : "ID-BT",
-        city: citySelect ? citySelect.options[citySelect.selectedIndex]?.text || "Tangerang" : "Tangerang",
+        city: citySelect ? citySelect.value : "ID-BT-TNG",
         agreedGuidelines: document.getElementById("reg-guidelines").checked
       });
 
