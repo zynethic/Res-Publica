@@ -1,7 +1,7 @@
 // src/app.js
 import { supabase } from './config.js';
 import { state } from './state.js';
-import { loadCountries, loadRegions, loadCities, registerPlayer, linkGooglePlayGames } from './auth.js';
+import { loadCountries, loadRegions, loadCities, registerPlayer, loginPlayer, logoutPlayer, linkGooglePlayGames } from './auth.js';
 import { getDictionaryByNIK } from './i18n.js';
 import { jobMarket, applyJob, doWorkShift, consumeFood } from './economy.js';
 import { sendChatMessage, setActiveChannel } from './chat.js';
@@ -13,39 +13,48 @@ import { showNotification } from './notifications.js';
 let customAvatarData = "";
 
 export async function initGame() {
-  // 1. Validasi Keamanan Wajib Online
   window.addEventListener('offline', () => {
     showNotification("Jaringan Terputus", "Game Res Publica wajib terhubung dengan internet!", false);
   });
 
+  // Listener mendeteksi link reset password dari email pemulihan Gmail
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      if (typeof window.resSwitchAuthMode === 'function') {
+        window.resSwitchAuthMode('reset');
+      }
+    }
+  });
+
   if (!state.player) {
-    document.getElementById("auth-screen").classList.remove("hidden");
-    document.getElementById("main-screen").classList.add("hidden");
+    const authScreen = document.getElementById("auth-screen");
+    const mainScreen = document.getElementById("main-screen");
+    if (authScreen) authScreen.classList.remove("hidden");
+    if (mainScreen) mainScreen.classList.add("hidden");
     await initRegistrationDropdowns();
   } else {
-    document.getElementById("auth-screen").classList.add("hidden");
-    document.getElementById("main-screen").classList.remove("hidden");
+    const authScreen = document.getElementById("auth-screen");
+    const mainScreen = document.getElementById("main-screen");
+    if (authScreen) authScreen.classList.add("hidden");
+    if (mainScreen) mainScreen.classList.remove("hidden");
     renderInterface();
     initRealtimeSubscriptions();
   }
 }
 
-// 2. Mengisi Dropdown 250 Negara, Wilayah, & Kota secara Cascading dari Database
 async function initRegistrationDropdowns() {
   const countrySelect = document.getElementById("reg-country");
-  const regionSelect = document.getElementById("reg-region");
-  const citySelect = document.getElementById("reg-city");
-
   if (!countrySelect) return;
 
   countrySelect.innerHTML = `<option value="">Memuat Negara...</option>`;
   const countries = await loadCountries();
-  
+
   if (countries.length > 0) {
     countrySelect.innerHTML = countries.map(c => `<option value="${c.code}">${c.name} (${c.code})</option>`).join("");
-    await updateRegionOptions(countrySelect.value);
+    countrySelect.value = "ID";
+    await updateRegionOptions("ID");
   } else {
-    countrySelect.innerHTML = `<option value="ID">Indonesia</option><option value="US">United States</option>`;
+    countrySelect.innerHTML = `<option value="ID">Indonesia (ID)</option>`;
     await updateRegionOptions("ID");
   }
 
@@ -53,9 +62,12 @@ async function initRegistrationDropdowns() {
     await updateRegionOptions(countrySelect.value);
   };
 
-  regionSelect.onchange = async () => {
-    await updateCityOptions(regionSelect.value);
-  };
+  const regionSelect = document.getElementById("reg-region");
+  if (regionSelect) {
+    regionSelect.onchange = async () => {
+      await updateCityOptions(regionSelect.value);
+    };
+  }
 }
 
 async function updateRegionOptions(countryCode) {
@@ -64,7 +76,7 @@ async function updateRegionOptions(countryCode) {
 
   regionSelect.innerHTML = `<option value="">Memuat Wilayah...</option>`;
   const regions = await loadRegions(countryCode);
-  
+
   if (regions.length > 0) {
     regionSelect.innerHTML = regions.map(r => `<option value="${r.id}">${r.name}</option>`).join("");
     await updateCityOptions(regions[0].id);
@@ -80,31 +92,45 @@ async function updateCityOptions(regionId) {
 
   citySelect.innerHTML = `<option value="">Memuat Daerah...</option>`;
   const cities = await loadCities(regionId);
-  
+
   if (cities.length > 0) {
-    citySelect.innerHTML = cities.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+    citySelect.innerHTML = cities.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
   } else {
-    citySelect.innerHTML = `<option value="Distrik Pusat">Distrik Pusat</option>`;
+    citySelect.innerHTML = `<option value="${regionId}-CTR">Pusat Kota</option>`;
   }
 }
 
-// 3. Engine Real-Time Supabase (Update Kas Negara & Daerah Real-Time)
 function initRealtimeSubscriptions() {
+  // Realtime update Kas APBN Negara
   supabase
     .channel('public:countries')
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'countries' }, payload => {
-      if (payload.new.code === state.player.current_country) {
+      if (payload.new.code === state.player?.current_country) {
         state.activeCountry.apbn_balance = Number(payload.new.apbn_balance);
         renderInterface();
       }
     })
     .subscribe();
 
+  // Realtime update Kas APBD Daerah
   supabase
     .channel('public:regions')
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'regions' }, payload => {
-      if (payload.new.id === state.player.current_region) {
+      if (payload.new.id === state.player?.current_region) {
         state.activeRegion.apbd_balance = Number(payload.new.apbd_balance);
+        renderInterface();
+      }
+    })
+    .subscribe();
+
+  // Realtime update Dompet & Uang Player
+  supabase
+    .channel('public:wallets')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets' }, payload => {
+      if (payload.new && payload.new.player_id === state.player?.id) {
+        if (!state.player.wallets) state.player.wallets = {};
+        state.player.wallets[payload.new.currency_code] = Number(payload.new.balance);
+        state.save();
         renderInterface();
       }
     })
@@ -117,7 +143,6 @@ export function renderInterface() {
 
   const dict = getDictionaryByNIK(p.nik);
 
-  // Status Bar Vitalitas
   const barHealth = document.getElementById("bar-health");
   const barEnergy = document.getElementById("bar-energy");
   const barHunger = document.getElementById("bar-hunger");
@@ -128,7 +153,6 @@ export function renderInterface() {
   if (barHunger) barHunger.style.width = `${p.hunger}%`;
   if (valEnergyNum) valEnergyNum.innerText = `${p.energy}%`;
 
-  // Kartu E-KTP Digital
   const elNik = document.getElementById("ktp-nik");
   const elName = document.getElementById("ktp-name");
   const elCountry = document.getElementById("ktp-country");
@@ -145,7 +169,6 @@ export function renderInterface() {
   if (elDob) elDob.innerText = p.birth_date;
   if (elGender) elGender.innerText = p.gender;
 
-  // Render Foto Profil (Base64 Galeri atau Siluet Default Gender)
   const avatarBox = document.getElementById("ktp-avatar-box");
   if (avatarBox) {
     if (p.avatar_url && p.avatar_url.startsWith("data:image")) {
@@ -155,20 +178,17 @@ export function renderInterface() {
     }
   }
 
-  // Dompet
   const idrTxt = document.getElementById("val-idr-txt");
   const usdTxt = document.getElementById("val-usd-txt");
-  if (idrTxt) idrTxt.innerText = `Rp ${(p.wallets.IDR || 0).toLocaleString('id-ID')}`;
-  if (usdTxt) usdTxt.innerText = `$ ${(p.wallets.USD || 0).toFixed(2)}`;
+  if (idrTxt) idrTxt.innerText = `Rp ${(p.wallets?.IDR || 0).toLocaleString('id-ID')}`;
+  if (usdTxt) usdTxt.innerText = `$ ${(p.wallets?.USD || 0).toFixed(2)}`;
 
-  // Google Play Status
   const gpBtn = document.getElementById("btn-gp-link");
   if (gpBtn && p.is_google_linked) {
     gpBtn.innerText = "✓ Google Play Tertaut";
     gpBtn.className = "text-[11px] bg-teal-600/30 text-teal-300 border border-teal-500/30 px-2 py-1 rounded-lg";
   }
 
-  // Render Bursa Kerja
   const jobBox = document.getElementById("job-vacancy-list");
   if (jobBox) {
     jobBox.innerHTML = jobMarket.map(j => `
@@ -183,7 +203,6 @@ export function renderInterface() {
     `).join("");
   }
 
-  // Render Bandara Internasional
   const airportBox = document.getElementById("airport-nations-list");
   if (airportBox) {
     airportBox.innerHTML = worldNations.map(n => `
@@ -200,7 +219,6 @@ export function renderInterface() {
     `).join("");
   }
 
-  // Otoritas Kas APBN/APBD
   const fiscal = getFiscalReport(p);
   const apbnContainer = document.getElementById("apbn-panel-container");
   if (apbnContainer) {
@@ -229,7 +247,6 @@ export function renderInterface() {
     }
   }
 
-  // Render Panel Admin
   const adminTabBtn = document.getElementById("btn-tab-admin-nav");
   if (adminTabBtn) {
     if (p.is_admin || state.isAdminMode) {
@@ -252,7 +269,8 @@ window.resWork = () => { doWorkShift(); renderInterface(); };
 window.resEat = () => { consumeFood(); renderInterface(); };
 window.resTravel = (code) => { travelToCountry(code); renderInterface(); };
 window.resLinkGoogle = () => { linkGooglePlayGames(); renderInterface(); };
-window.resAllocateAPBN = () => { allocateAPBNFunds(5000000000000.0, "Subsidi Pangan & Pupuk Warga"); renderInterface(); };
+window.resLogout = () => { logoutPlayer(); };
+window.resAllocateAPBN = () => { allocateAPBNFunds(5000000000000.0, "Subsidi Sembako & Pupuk"); renderInterface(); };
 window.resRatifyAPBN = () => { ratifyAPBNBill(); renderInterface(); };
 window.resSwitchAdminRole = (role) => { switchAdminRole(role); renderInterface(); };
 window.resGrantAdminFunds = () => { grantAdminFunds(); renderInterface(); };
@@ -289,7 +307,6 @@ window.resChangeChatChannel = (ch) => {
   setActiveChannel(ch);
 };
 
-// Hook Pemilihan File Galeri HP untuk Foto Profil KTP
 window.resHandleFileSelect = (event) => {
   const file = event.target.files[0];
   if (!file) return;
@@ -305,7 +322,7 @@ window.resHandleFileSelect = (event) => {
       preview.classList.remove("hidden");
       placeholder.classList.add("hidden");
     }
-    showNotification("Foto Terpilih", "Foto profil galeri berhasil dimuat ke E-KTP!", true);
+    showNotification("Foto Terpilih", "Foto profil galeri berhasil dimuat!", true);
   };
   reader.readAsDataURL(file);
 };
