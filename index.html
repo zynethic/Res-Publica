@@ -4,424 +4,529 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Res Publica</title>
+  <!-- FONT RESMI PARLEMENTUM: RAJDHANI & INTER -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { -webkit-tap-highlight-color: transparent; }
-    .bg-adem { background-color: #0b111a; }
-    .glass-ktp {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(13, 37, 56, 0.9));
-      border: 1px solid rgba(45, 212, 191, 0.3);
+    body {
+      background-color: #080c14;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-rajdhani { font-family: 'Rajdhani', sans-serif; }
+    
+    .shield-badge {
+      clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 50% 100%, 0% 70%);
+      background: linear-gradient(180deg, #162032 0%, #0c121d 100%);
+    }
+
+    .flag-bg-pattern {
+      background: linear-gradient(135deg, rgba(160, 26, 40, 0.75) 0%, rgba(8, 12, 20, 0.95) 75%),
+                  radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
     }
   </style>
 </head>
-<body class="bg-adem text-slate-200 min-h-screen flex flex-col font-sans select-none overflow-x-hidden">
+<body class="text-slate-300 min-h-screen flex flex-col select-none overflow-x-hidden">
 
-  <!-- BANNER NOTIFIKASI MENGAMBANG GAYA IOS -->
-  <div id="ios-notification-container" class="fixed top-3 left-0 right-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
+  <!-- BANNER NOTIFIKASI GAYA IOS / DYNAMIC -->
+  <div id="ios-notification-container" class="fixed top-2 left-0 right-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 
-  <!-- MODAL AUTENTIKASI UTAMA -->
-  <div id="auth-screen" class="hidden fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-md p-4 flex items-center justify-center overflow-y-auto">
-    <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-3xl w-full max-w-md shadow-2xl space-y-4 my-auto">
-      
+  <!-- ====================================================================== -->
+  <!-- MODAL AUTENTIKASI: MASUK, BUAT E-KTP, & RESET SANDI                     -->
+  <!-- ====================================================================== -->
+  <div id="auth-screen" class="hidden fixed inset-0 z-50 bg-[#080c14]/95 backdrop-blur-md p-4 flex items-center justify-center overflow-y-auto">
+    <div class="bg-[#0f1726] border border-[#223049] p-6 rounded-3xl w-full max-w-sm shadow-2xl space-y-4 my-auto">
       <div class="text-center">
-        <h1 class="text-xl font-black tracking-wider text-teal-400">🏛️ RES PUBLICA</h1>
-        <p class="text-xs text-slate-400">Simulasi Geopolitik & Kependudukan Global</p>
+        <h1 class="text-2xl font-black font-rajdhani tracking-wider text-[#f3ba2f]">RES PUBLICA</h1>
+        <p class="text-[11px] text-slate-400">Dunia Terbuka Geopolitik & Simulasi Negara</p>
       </div>
 
-      <!-- TAB SWITCHER: MASUK / DAFTAR -->
-      <div id="auth-tab-buttons" class="grid grid-cols-2 bg-slate-950 p-1 rounded-2xl border border-slate-800 text-xs font-bold text-center">
-        <button id="tab-btn-login" onclick="window.resSwitchAuthMode('login')" class="py-2 rounded-xl bg-teal-700 text-white transition">Masuk</button>
-        <button id="tab-btn-register" onclick="window.resSwitchAuthMode('register')" class="py-2 rounded-xl text-slate-400 transition">Buat E-KTP</button>
+      <div class="grid grid-cols-2 bg-[#080c14] p-1 rounded-xl border border-[#1b273d] text-xs font-rajdhani font-bold text-center">
+        <button onclick="window.resSwitchAuthMode('login')" class="py-2 rounded-lg bg-[#d4af37] text-black">MASUK</button>
+        <button onclick="window.resSwitchAuthMode('register')" class="py-2 rounded-lg text-slate-400">BUAT E-KTP</button>
       </div>
 
-      <!-- 1. FORM MASUK (LOGIN) -->
+      <!-- FORM MASUK -->
       <div id="form-login-section" class="space-y-3 text-xs">
         <div>
           <label class="block text-slate-400 mb-1">Email Gmail</label>
-          <input id="login-email" type="email" placeholder="admin@zynethic.xyz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+          <input id="login-email" type="email" placeholder="admin@zynethic.xyz" class="w-full bg-[#080c14] border border-[#1e2b42] rounded-xl px-3 py-2 text-white">
         </div>
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="text-slate-400">Kata Sandi</label>
-            <button onclick="window.resSwitchAuthMode('forgot')" class="text-teal-400 text-[11px] hover:underline">Lupa Kata Sandi?</button>
+            <button onclick="window.resSwitchAuthMode('forgot')" class="text-[#f3ba2f] text-[11px] hover:underline">Lupa Kata Sandi?</button>
           </div>
-          <input id="login-pass" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
+          <input id="login-pass" type="password" placeholder="••••••••" class="w-full bg-[#080c14] border border-[#1e2b42] rounded-xl px-3 py-2 text-white">
         </div>
-        <button id="btn-submit-login" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition mt-2">
-          Masuk ke Permainan
+        <button id="btn-submit-login" class="w-full bg-gradient-to-r from-[#d4af37] to-[#f3ba2f] py-3 rounded-xl font-rajdhani font-black text-sm text-black tracking-wider shadow-lg shadow-amber-500/10 active:scale-95 transition">
+          MASUK KE PERMAINAN
         </button>
       </div>
 
-      <!-- 2. FORM LUPA KATA SANDI -->
+      <!-- FORM LUPA PASSWORD -->
       <div id="form-forgot-section" class="hidden space-y-3 text-xs">
-        <p class="text-slate-400 text-[11px]">Masukkan alamat Gmail yang terdaftar. Kami akan mengirimkan tautan reset kata sandi langsung ke email Anda.</p>
-        <div>
-          <label class="block text-slate-400 mb-1">Email Gmail Terdaftar</label>
-          <input id="forgot-email" type="email" placeholder="nama@gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
-        </div>
-        <button id="btn-submit-forgot" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition">
-          Kirim Tautan Reset ke Gmail
-        </button>
-        <button onclick="window.resSwitchAuthMode('login')" class="w-full py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-400 text-xs">
-          Kembali ke Menu Masuk
-        </button>
+        <p class="text-slate-400 text-[11px]">Masukkan alamat Gmail Anda untuk menerima tautan pemulihan kata sandi:</p>
+        <input id="forgot-email" type="email" placeholder="nama@gmail.com" class="w-full bg-[#080c14] border border-[#1e2b42] rounded-xl px-3 py-2 text-white">
+        <button id="btn-submit-forgot" class="w-full bg-[#d4af37] text-black py-2.5 rounded-xl font-rajdhani font-bold">KIRIM TAUTAN KE GMAIL</button>
+        <button onclick="window.resSwitchAuthMode('login')" class="w-full text-center text-slate-400 text-[11px]">Batal</button>
       </div>
 
-      <!-- 3. FORM BUAT KATA SANDI BARU -->
+      <!-- FORM RESET PASSWORD -->
       <div id="form-reset-section" class="hidden space-y-3 text-xs">
-        <div class="bg-teal-950/40 border border-teal-500/30 p-2.5 rounded-xl text-teal-300 text-[11px]">
-          Verifikasi Gmail berhasil! Masukkan kata sandi baru untuk akun Anda.
-        </div>
-        <div>
-          <label class="block text-slate-400 mb-1">Kata Sandi Baru</label>
-          <input id="reset-new-pass" type="password" placeholder="Minimal 6 karakter" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
-        </div>
-        <div>
-          <label class="block text-slate-400 mb-1">Konfirmasi Kata Sandi Baru</label>
-          <input id="reset-confirm-pass" type="password" placeholder="Ulangi kata sandi baru" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
-        </div>
-        <button id="btn-submit-reset-pass" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition">
-          Simpan Kata Sandi & Masuk
-        </button>
+        <input id="reset-new-pass" type="password" placeholder="Kata sandi baru (min 6 karakter)" class="w-full bg-[#080c14] border border-[#1e2b42] rounded-xl px-3 py-2 text-white">
+        <input id="reset-confirm-pass" type="password" placeholder="Konfirmasi kata sandi" class="w-full bg-[#080c14] border border-[#1e2b42] rounded-xl px-3 py-2 text-white">
+        <button id="btn-submit-reset-pass" class="w-full bg-[#d4af37] text-black py-2.5 rounded-xl font-rajdhani font-bold">SIMPAN KATA SANDI</button>
       </div>
 
-      <!-- 4. FORM REGISTRASI E-KTP -->
-      <div id="form-register-section" class="hidden space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-400 mb-1">Nama Lengkap Pemain</label>
-          <input id="reg-name" type="text" placeholder="Contoh: Arinal Khako" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
-        </div>
-        <div>
-          <label class="block text-slate-400 mb-1">Alamat Email Gmail</label>
-          <input id="reg-email" type="email" placeholder="nama@gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
-        </div>
-        <div>
-          <label class="block text-slate-400 mb-1">Kata Sandi</label>
-          <input id="reg-pass" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white">
-        </div>
-
-        <!-- UPLOAD FOTO PROFIL GALERI -->
-        <div class="bg-slate-950 border border-slate-800 p-3 rounded-2xl flex items-center gap-3">
-          <div class="w-14 h-14 bg-slate-900 border border-slate-700 rounded-xl overflow-hidden flex items-center justify-center text-2xl flex-shrink-0">
+      <!-- FORM REGISTER (E-KTP DINAMIS 250 NEGARA & FOTO GALERI) -->
+      <div id="form-register-section" class="hidden space-y-2.5 text-xs">
+        <input id="reg-name" type="text" placeholder="Nama Lengkap" class="w-full bg-[#080c14] border border-[#1e2b42] rounded-xl px-3 py-2 text-white">
+        <input id="reg-email" type="email" placeholder="nama@gmail.com" class="w-full bg-[#080c14] border border-[#1e2b42] rounded-xl px-3 py-2 text-white">
+        <input id="reg-pass" type="password" placeholder="Kata Sandi" class="w-full bg-[#080c14] border border-[#1e2b42] rounded-xl px-3 py-2 text-white">
+        
+        <!-- FOTO PROFIL GALERI -->
+        <div class="bg-[#080c14] border border-[#1e2b42] p-2.5 rounded-xl flex items-center gap-2.5">
+          <div class="w-10 h-10 bg-[#0e1625] border border-[#223049] rounded-lg overflow-hidden flex items-center justify-center text-lg flex-shrink-0">
             <span id="avatar-upload-placeholder">📸</span>
-            <img id="avatar-upload-preview" class="w-full h-full object-cover hidden" alt="Preview">
+            <img id="avatar-upload-preview" class="w-full h-full object-cover hidden" alt="Avatar">
           </div>
           <div class="flex-1">
-            <label class="block text-[11px] font-semibold text-teal-400 mb-1">Foto Profil Galeri / Kamera</label>
-            <input id="reg-file-avatar" type="file" accept="image/*" onchange="window.resHandleFileSelect(event)" class="text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:bg-teal-700 file:text-white">
+            <input id="reg-file-avatar" type="file" accept="image/*" onchange="window.resHandleFileSelect(event)" class="text-[9px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:bg-[#d4af37] file:text-black file:font-bold">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-slate-400 mb-1">Jenis Kelamin</label>
-            <select id="reg-gender" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
-              <option value="Laki-laki">Laki-laki</option>
-              <option value="Perempuan">Perempuan</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-slate-400 mb-1">Avatar Bawaan</label>
-            <select id="reg-default-avatar-type" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white">
-              <option value="DEFAULT_GENDER">Otomatis Gender</option>
-              <option value="MANUAL_GALLERY">Foto Galeri</option>
-            </select>
-          </div>
+          <select id="reg-gender" class="bg-[#080c14] border border-[#1e2b42] rounded-xl px-2 py-2 text-white">
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+          <input id="reg-dob-y" type="number" value="2000" class="bg-[#080c14] border border-[#1e2b42] rounded-xl px-2 py-2 text-white text-center">
         </div>
 
-        <div>
-          <label class="block text-slate-400 mb-1">Tanggal Lahir (Hari / Bulan / Tahun)</label>
-          <div class="grid grid-cols-3 gap-2">
-            <input id="reg-dob-d" type="number" min="1" max="31" value="15" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-center text-white">
-            <input id="reg-dob-m" type="number" min="1" max="12" value="6" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-center text-white">
-            <input id="reg-dob-y" type="number" min="1960" max="2015" value="2000" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-center text-white">
-          </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          <select id="reg-country" class="bg-[#080c14] border border-[#1e2b42] rounded-xl px-1.5 py-2 text-white text-[10px]"></select>
+          <select id="reg-region" class="bg-[#080c14] border border-[#1e2b42] rounded-xl px-1.5 py-2 text-white text-[10px]"></select>
+          <select id="reg-city" class="bg-[#080c14] border border-[#1e2b42] rounded-xl px-1.5 py-2 text-white text-[10px]"></select>
         </div>
 
-        <!-- DROPDOWN WILAYAH DINAMIS DATABASE -->
-        <div>
-          <label class="block text-slate-400 mb-1">Negara, Wilayah & Daerah Domisili</label>
-          <div class="grid grid-cols-3 gap-2">
-            <select id="reg-country" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white text-[11px]"></select>
-            <select id="reg-region" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white text-[11px]"></select>
-            <select id="reg-city" class="bg-slate-950 border border-slate-800 rounded-xl px-2 py-2 text-white text-[11px]"></select>
-          </div>
+        <div class="flex items-center gap-2 pt-1">
+          <input id="reg-guidelines" type="checkbox" checked class="w-4 h-4 bg-[#080c14] border-[#1e2b42] text-[#f3ba2f]">
+          <label for="reg-guidelines" class="text-[10px] text-slate-400">Setujui Pedoman Komunitas Res Publica</label>
         </div>
 
-        <div class="flex items-center gap-2 pt-2">
-          <input id="reg-guidelines" type="checkbox" class="w-4 h-4 rounded bg-slate-950 border-slate-800 text-teal-600">
-          <label for="reg-guidelines" class="text-[11px] text-slate-400">Saya menyetujui Pedoman Komunitas Res Publica</label>
-        </div>
-
-        <button id="btn-submit-registration" class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 py-3 rounded-2xl font-bold text-sm text-white shadow-lg shadow-teal-500/10 active:scale-95 transition">
-          Terbitkan E-KTP & Terima Bantuan Rp 500.000
+        <button id="btn-submit-registration" class="w-full bg-gradient-to-r from-[#d4af37] to-[#f3ba2f] text-black py-2.5 rounded-xl font-rajdhani font-black text-sm">
+          TERBITKAN E-KTP RESMI
         </button>
       </div>
-
     </div>
   </div>
 
-  <!-- DASBOR GAME UTAMA -->
-  <div id="main-screen" class="flex-1 flex flex-col max-w-md mx-auto w-full pb-20">
+  <!-- ====================================================================== -->
+  <!-- MAIN APP CONTAINER GAYA PARLEMENTUM                                   -->
+  <!-- ====================================================================== -->
+  <div id="main-screen" class="flex-1 flex flex-col max-w-md mx-auto w-full relative pb-16">
 
-    <!-- HEADER STATUS ATAS -->
-    <header class="p-3 border-b border-slate-800/80 bg-slate-900/40 backdrop-blur-md flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span class="text-sm font-black text-teal-400 tracking-wider">RES PUBLICA</span>
-        <button id="btn-gp-link" onclick="window.resLinkGoogle()" class="text-[10px] bg-slate-850 border border-slate-700/60 text-slate-400 px-2 py-1 rounded-lg">🎮 Google Play</button>
-      </div>
-      <div class="flex items-center gap-2">
-        <div class="text-right">
-          <div id="val-idr-txt" class="text-xs font-bold text-teal-400">Rp 0</div>
-          <div id="val-usd-txt" class="text-[10px] text-slate-400">$ 0.00</div>
+    <!-- TOP HEADER ELEGAN DENGAN PERISAI TENGAH -->
+    <header class="relative px-3 pt-3 pb-2 flex items-center justify-between border-b border-[#1b263b] bg-[#0a0f19]">
+      
+      <!-- Hamburger Menu (Kiri) -->
+      <button onclick="window.toggleMenuDrawer()" class="w-10 h-10 flex items-center justify-center rounded-xl border border-[#223049] bg-[#0e1625] text-slate-300 active:scale-95 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+
+      <!-- Center Crest Shield (Perisai Level Parlementum) -->
+      <div class="absolute left-1/2 -translate-x-1/2 top-1 flex flex-col items-center">
+        <div class="shield-badge w-14 h-16 border-2 border-[#d4af37] flex items-center justify-center shadow-lg shadow-black/80">
+          <span id="shield-avatar-char" class="font-rajdhani font-black text-2xl text-[#f3ba2f]">R</span>
         </div>
-        <button onclick="window.resLogout()" title="Keluar Akun" class="p-1.5 bg-slate-900 border border-rose-500/30 text-rose-400 rounded-xl text-xs active:scale-90 transition">🚪</button>
+        <div id="shield-level-badge" class="w-5 h-5 rounded-full bg-[#080c14] border border-[#d4af37] text-[10px] font-bold text-[#f3ba2f] flex items-center justify-center -mt-2.5 z-10">
+          2
+        </div>
+      </div>
+
+      <!-- Kanan: Saldo Ringkas & Ikon Aksi -->
+      <div class="flex flex-col items-end">
+        <div class="flex items-center gap-2 text-right">
+          <span class="text-[11px] font-rajdhani font-bold text-slate-300"><span id="header-usd-val">650</span> <span class="text-[9px] text-slate-500">USD</span></span>
+          <span class="text-[11px] font-rajdhani font-bold text-[#f3ba2f]">🪙 <span id="header-gold-val">81</span></span>
+        </div>
+        <div class="flex items-center gap-2.5 mt-2 text-slate-400">
+          <button onclick="window.resLinkGoogle()" title="Google Play Games" class="hover:text-amber-400 transition text-sm">🎮</button>
+          <button onclick="window.resSwitchTab('tab-ktp')" title="Kartu E-KTP" class="hover:text-amber-400 transition text-sm">🪪</button>
+          <button onclick="window.resSwitchTab('tab-chat')" title="Ruang Obrolan" class="hover:text-amber-400 transition text-sm">💬</button>
+          <button onclick="window.toggleNotificationsMenu()" class="relative hover:text-amber-400 transition text-sm">
+            🔔<span class="absolute -top-1 -right-1.5 w-3.5 h-3.5 bg-amber-500 text-black font-bold rounded-full text-[8px] flex items-center justify-center">1</span>
+          </button>
+          <button onclick="window.toggleSettingsMenu()" class="hover:text-amber-400 transition text-sm">⚙️</button>
+        </div>
       </div>
     </header>
 
-    <!-- STATUS VITALITAS LENGKAP -->
-    <section class="grid grid-cols-3 gap-2 p-3 bg-slate-900/20">
-      <div class="bg-slate-900/80 border border-slate-800/80 p-2 rounded-xl">
-        <div class="text-[10px] text-rose-400 font-semibold mb-1">❤️ DARAH</div>
-        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
-          <div id="bar-health" class="bg-rose-500/90 h-full w-full"></div>
-        </div>
-      </div>
-      <div class="bg-slate-900/80 border border-slate-800/80 p-2 rounded-xl">
-        <div class="flex justify-between text-[10px] text-amber-400 font-semibold mb-1">
-          <span>⚡ ENERGI</span><span id="val-energy-num">100%</span>
-        </div>
-        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
-          <div id="bar-energy" class="bg-amber-400/90 h-full w-full"></div>
-        </div>
-      </div>
-      <div class="bg-slate-900/80 border border-slate-800/80 p-2 rounded-xl">
-        <div class="text-[10px] text-teal-400 font-semibold mb-1">🍚 KENYANG</div>
-        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
-          <div id="bar-hunger" class="bg-teal-400/90 h-full w-full"></div>
-        </div>
-      </div>
-    </section>
+    <!-- POPOVER PENGATURAN (RODA GIGI) -->
+    <div id="settings-popup" class="hidden absolute right-3 top-16 z-40 bg-[#0e1625] border border-[#25354f] w-48 rounded-2xl shadow-2xl p-2 space-y-1 text-xs font-rajdhani font-bold">
+      <button onclick="window.resSwitchTab('tab-ktp')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-[#162238] text-slate-200"><span>👤</span> Profilku (E-KTP)</button>
+      <button onclick="window.resLinkGoogle()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-[#162238] text-slate-200"><span>🎁</span> Tautkan Google Play</button>
+      <button class="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-[#162238] text-slate-200">
+        <span class="flex items-center gap-2.5"><span>📜</span> Rekam Jejak</span>
+        <span class="text-[10px] text-slate-400">100/100</span>
+      </button>
+      <button onclick="window.resSwitchTab('tab-gov')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-[#162238] text-slate-200"><span>🏛️</span> Kas APBN/APBD</button>
+      <div class="border-t border-[#1b263b] my-1"></div>
+      <button onclick="window.resLogout()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-950/40 text-rose-400"><span>🚪</span> Keluar</button>
+    </div>
 
-    <!-- KONTEN TAB NAVIGASI -->
-    <main class="flex-1 p-3 overflow-y-auto">
+    <!-- POPOVER NOTIFIKASI -->
+    <div id="notifications-popup" class="hidden absolute right-3 top-16 z-40 bg-[#0e1625] border border-[#25354f] w-72 rounded-2xl shadow-2xl p-3 space-y-2 text-xs">
+      <div class="flex justify-between items-center border-b border-[#1b263b] pb-2 font-rajdhani font-bold">
+        <span class="text-[#f3ba2f]">◆ NOTIFIKASI</span>
+        <button class="text-[10px] text-slate-400 hover:text-white">tandai dibaca</button>
+      </div>
+      <div class="space-y-2 max-h-60 overflow-y-auto">
+        <div class="p-2 bg-[#080c14] border border-[#1b263b] rounded-xl">
+          <div class="flex justify-between text-[10px] text-slate-400 mb-1"><span class="text-[#f3ba2f] font-bold">⚖️ POLITIK</span><span>14.29</span></div>
+          <p class="text-[11px] text-slate-200 leading-tight">Presiden menetapkan kenaikan tarif bea cukai ekspor tambang mentah sebesar 5%.</p>
+        </div>
+      </div>
+    </div>
 
-      <!-- TAB 1: KTP DIGITAL RESMI -->
-      <div id="tab-ktp" class="space-y-4">
-        <div class="glass-ktp rounded-3xl p-4 shadow-xl">
-          <div class="flex justify-between items-start border-b border-teal-500/20 pb-2 mb-3">
+    <!-- DRAWER MENU NAVIGASI SAMPING -->
+    <div id="parlamentum-drawer" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex">
+      <div class="bg-[#090e18] border-r border-[#1b273d] w-4/5 max-w-xs h-full p-4 overflow-y-auto flex flex-col space-y-5">
+        <div class="flex justify-between items-center border-b border-[#1b273d] pb-3">
+          <button onclick="window.toggleMenuDrawer()" class="w-8 h-8 rounded-lg bg-[#111928] border border-[#223049] flex items-center justify-center text-slate-400">✕</button>
+          <div class="text-right">
+            <div class="text-xs font-rajdhani font-bold text-slate-300">650 USD</div>
+            <div class="text-[11px] font-rajdhani font-bold text-[#f3ba2f]">🪙 81</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-rajdhani font-bold tracking-widest text-slate-500 mb-2">BERANDA</div>
+          <div class="grid grid-cols-2 gap-2 text-xs font-rajdhani font-bold">
+            <button onclick="window.resSwitchTab('tab-dashboard')" class="p-2.5 rounded-xl bg-[#141d2e] border border-[#f3ba2f]/40 text-[#f3ba2f] text-left">⊞ DASHBOARD</button>
+            <button onclick="window.resSwitchTab('tab-ktp')" class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">🪪 E-KTP WARGA</button>
+            <button class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">🏆 PENCAPAIAN</button>
+            <button class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">🚚 KONVOI</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-rajdhani font-bold tracking-widest text-slate-500 mb-2">DUNIA</div>
+          <div class="grid grid-cols-2 gap-2 text-xs font-rajdhani font-bold">
+            <button onclick="window.resSwitchTab('tab-map')" class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">✈️ BANDARA</button>
+            <button class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">🏛️ NEGARA</button>
+            <button class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">📍 WILAYAH</button>
+            <button class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">📊 STATISTIK</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-rajdhani font-bold tracking-widest text-slate-500 mb-2">EKONOMI</div>
+          <div class="grid grid-cols-2 gap-2 text-xs font-rajdhani font-bold">
+            <button class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">🏪 PASAR</button>
+            <button onclick="window.resSwitchTab('tab-jobs')" class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">💼 BURSA KERJA</button>
+            <button class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">💱 VALAS</button>
+            <button onclick="window.resSwitchTab('tab-gov')" class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">🏛️ KAS APBN</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-rajdhani font-bold tracking-widest text-slate-500 mb-2">KOMUNITAS & POLITIK</div>
+          <div class="grid grid-cols-2 gap-2 text-xs font-rajdhani font-bold">
+            <button onclick="window.resSwitchTab('tab-chat')" class="p-2.5 rounded-xl bg-[#0e1625] border border-[#1b273d] text-slate-300 text-left">💬 CHAT WARGA</button>
+            <button id="btn-tab-admin-nav" onclick="window.resSwitchTab('tab-admin')" class="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/40 text-amber-300 text-left hidden">⚙️ ADMIN MODE</button>
+          </div>
+        </div>
+      </div>
+      <div onclick="window.toggleMenuDrawer()" class="flex-1"></div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- KONTEN TAB UTAMA                                                       -->
+    <!-- ====================================================================== -->
+    <main class="flex-1 px-3 py-4 space-y-3.5 overflow-y-auto">
+
+      <!-- TAB DASHBOARD PARLEMENTUM -->
+      <div id="tab-dashboard" class="space-y-3.5">
+        
+        <!-- 1. KARTU PROFIL -->
+        <section class="flag-bg-pattern border border-[#25354f] rounded-3xl p-4 shadow-xl relative overflow-hidden">
+          <div class="relative z-10 space-y-1">
+            <h2 id="profile-player-name" class="font-rajdhani font-black text-xl text-white tracking-wider">ROBERT_MELLEMA</h2>
+            <div class="flex items-center gap-1.5 text-xs text-slate-300">
+              <span class="w-2.5 h-2.5 rounded-sm bg-rose-600 inline-block"></span>
+              <span id="profile-country-name">Seram Socialist Republic</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs text-slate-400">
+              <span>📍</span><span id="profile-city-name">Jakarta</span>
+            </div>
+
+            <div class="pt-3">
+              <div class="flex justify-between items-center text-xs font-rajdhani font-bold mb-1">
+                <span class="text-[#f3ba2f]">📈 LEVEL</span>
+                <div class="flex items-center gap-1.5">
+                  <span id="profile-xp-text" class="text-slate-400">25 / 29 XP</span>
+                  <span id="profile-xp-badge" class="text-base text-[#f3ba2f]">2</span>
+                </div>
+              </div>
+              <div class="w-full bg-[#080c14] h-2 rounded-full overflow-hidden border border-[#1b263b]">
+                <div id="profile-xp-bar" class="bg-gradient-to-r from-amber-500 to-[#f3ba2f] h-full" style="width: 86%;"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. WIDGET ENERGI -->
+        <section class="bg-[#0e1625] border border-[#1e2c44] rounded-2xl p-4 space-y-2">
+          <div class="flex justify-between items-baseline">
+            <span class="font-rajdhani font-black tracking-wider text-xs text-[#00e5be] flex items-center gap-1">⚡ ENERGI</span>
+            <div class="font-rajdhani font-black">
+              <span id="energy-main-num" class="text-3xl text-white">105</span>
+              <span id="energy-max-num" class="text-sm text-slate-500">/105</span>
+            </div>
+          </div>
+          <div class="w-full bg-[#080c14] h-2.5 rounded-full overflow-hidden border border-[#1b263b]">
+            <div id="energy-main-bar" class="bg-[#00e5be] h-full w-full"></div>
+          </div>
+          <div class="text-[11px] text-[#00e5be] font-medium">Penuh — gunakan untuk bekerja</div>
+        </section>
+
+        <!-- 3. PANEL ROTI T1-T5 (PILAR 2) -->
+        <section class="bg-[#0e1625] border border-[#1e2c44] rounded-2xl p-4 space-y-2.5">
+          <div class="flex justify-between items-center">
+            <span class="font-rajdhani font-black text-xs text-[#f3ba2f] flex items-center gap-1.5">🌾 MAKANAN</span>
+            <span id="bread-quota-text" class="text-[11px] text-slate-400">Sisa roti hari ini 10/10</span>
+          </div>
+          <div class="grid grid-cols-5 gap-1.5 text-center font-rajdhani">
+            <button onclick="window.resEatRation('T1', 10)" class="bg-[#080c14] border border-[#1e2c44] hover:border-amber-400 p-2 rounded-xl active:scale-95 transition">
+              <div class="font-black text-white text-xs">T1</div>
+              <div class="text-[10px] text-[#00e5be] font-bold">⚡10</div>
+              <div class="text-[9px] text-slate-400">×1</div>
+            </button>
+            <button onclick="window.resEatRation('T2', 20)" class="bg-[#080c14] border border-[#1e2c44] hover:border-amber-400 p-2 rounded-xl active:scale-95 transition">
+              <div class="font-black text-slate-400 text-xs">T2</div>
+              <div class="text-[10px] text-slate-500 font-bold">⚡20</div>
+              <div class="text-[9px] text-slate-600">×0</div>
+            </button>
+            <button onclick="window.resEatRation('T3', 30)" class="bg-[#080c14] border border-[#1e2c44] hover:border-amber-400 p-2 rounded-xl active:scale-95 transition">
+              <div class="font-black text-slate-400 text-xs">T3</div>
+              <div class="text-[10px] text-slate-500 font-bold">⚡30</div>
+              <div class="text-[9px] text-slate-600">×0</div>
+            </button>
+            <button onclick="window.resEatRation('T4', 40)" class="bg-[#080c14] border border-[#1e2c44] hover:border-amber-400 p-2 rounded-xl active:scale-95 transition">
+              <div class="font-black text-slate-400 text-xs">T4</div>
+              <div class="text-[10px] text-slate-500 font-bold">⚡40</div>
+              <div class="text-[9px] text-slate-600">×0</div>
+            </button>
+            <button onclick="window.resEatRation('T5', 50)" class="bg-[#080c14] border border-[#1e2c44] hover:border-amber-400 p-2 rounded-xl active:scale-95 transition">
+              <div class="font-black text-slate-400 text-xs">T5</div>
+              <div class="text-[10px] text-slate-500 font-bold">⚡50</div>
+              <div class="text-[9px] text-slate-600">×0</div>
+            </button>
+          </div>
+        </section>
+
+        <!-- 4. DOMPET MATA UANG EMAS & USD -->
+        <section class="bg-[#0e1625] border border-[#1e2c44] rounded-2xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs font-rajdhani font-bold">
+            <span class="text-slate-300 flex items-center gap-1.5">📁 DOMPET</span>
+            <button class="text-[11px] text-[#f3ba2f] hover:underline">TUKAR ↗</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2 font-rajdhani">
+            <div class="bg-[#080c14] border border-[#1b263b] p-3 rounded-xl">
+              <div class="text-[10px] text-amber-500 font-bold flex items-center gap-1">🪙 EMAS</div>
+              <div id="wallet-gold-val" class="text-2xl font-black text-[#f3ba2f] mt-1">81</div>
+            </div>
+            <div class="bg-[#080c14] border border-[#1b263b] p-3 rounded-xl">
+              <div class="text-[10px] text-slate-400 font-bold flex items-center gap-1">💵 USD</div>
+              <div id="wallet-usd-val" class="text-2xl font-black text-white mt-1">650</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. SHIFT KERJA BUMN 8 JAM BERBASIS UMR REGIONAL (PILAR 3) -->
+        <section>
+          <button id="btn-shift-action" class="w-full bg-[#0e1625] hover:bg-[#131e33] border border-[#25354f] py-3.5 px-4 rounded-2xl flex items-center justify-between text-xs font-rajdhani font-black text-slate-200 active:scale-95 transition shadow-lg">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base text-[#f3ba2f]">⚒️</span>
+              <div class="text-left">
+                <div class="text-white text-xs font-bold tracking-wider">SHIFT BUMN (8 JAM)</div>
+                <div id="shift-status-label" class="text-[11px] text-[#00e5be]">Sesuai UMR Kota/Kabupaten (+Gaji Bersih & XP)</div>
+              </div>
+            </div>
+            <span class="text-xs text-slate-400">➔</span>
+          </button>
+        </section>
+
+        <!-- 6. SEDANG TERJADI: BILIK SUARA / PEMILU & RUU PARLEMEN -->
+        <section class="space-y-2">
+          <div class="flex items-center gap-1.5 text-xs font-rajdhani font-black text-[#f3ba2f]">
+            <span>((•)) SEDANG TERJADI</span>
+            <span class="w-4 h-4 bg-amber-500 text-black text-[9px] font-bold rounded-full flex items-center justify-center">2</span>
+          </div>
+
+          <div onclick="window.resVotePoll('BILIK_SUARA')" class="bg-[#0e1625] border border-[#1e2c44] hover:border-amber-500/40 p-3.5 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-[#080c14] border border-[#1e2c44] flex items-center justify-center text-amber-400 text-sm">🗳️</div>
+              <div>
+                <div class="text-xs font-bold text-white">Bilik suara dibuka</div>
+                <div class="text-[10px] text-slate-400">partisipasi 3% · berikan suaramu</div>
+              </div>
+            </div>
+            <span class="text-slate-500 text-xs">›</span>
+          </div>
+
+          <div onclick="window.resVotePoll('RUU_PARLEMEN')" class="bg-[#0e1625] border border-[#1e2c44] hover:border-amber-500/40 p-3.5 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-[#080c14] border border-[#1e2c44] flex items-center justify-center text-amber-400 text-sm">⚖️</div>
+              <div>
+                <div class="text-xs font-bold text-white">1 undang-undang sedang dipungut...</div>
+                <div class="text-[10px] text-slate-400">sisa 20 j 43 mnt</div>
+              </div>
+            </div>
+            <span class="text-slate-500 text-xs">›</span>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- TAB KARTU E-KTP LENGKAP -->
+      <div id="tab-ktp" class="hidden space-y-4">
+        <div class="bg-[#0e1625] border border-[#25354f] rounded-3xl p-4 shadow-xl">
+          <div class="flex justify-between items-start border-b border-[#1b263b] pb-2 mb-3">
             <div>
-              <div class="text-[9px] tracking-widest text-teal-300/80 font-mono">REPUBLIK RES PUBLICA</div>
+              <div class="text-[9px] tracking-widest text-[#f3ba2f] font-mono">REPUBLIK RES PUBLICA</div>
               <div class="text-xs font-bold text-white tracking-wider">KARTU TANDA PENDUDUK DIGITAL</div>
             </div>
             <span class="text-xl">🇮🇩</span>
           </div>
 
           <div class="flex gap-3 items-center">
-            <div id="ktp-avatar-box" class="w-16 h-20 bg-slate-950 border border-teal-500/20 rounded-xl overflow-hidden flex items-center justify-center text-3xl shadow-inner">
-              👨
-            </div>
+            <div id="ktp-avatar-box" class="w-16 h-20 bg-[#080c14] border border-[#1e2c44] rounded-xl overflow-hidden flex items-center justify-center text-3xl shadow-inner">👨</div>
             <div class="space-y-1 text-xs">
-              <div><span class="text-slate-400 text-[10px]">NIK:</span> <span id="ktp-nik" class="font-mono text-teal-300 font-semibold"></span></div>
+              <div><span class="text-slate-400 text-[10px]">NIK:</span> <span id="ktp-nik" class="font-mono text-[#00e5be] font-semibold"></span></div>
               <div><span class="text-slate-400 text-[10px]">Nama:</span> <span id="ktp-name" class="font-bold text-white"></span></div>
-              <div><span class="text-slate-400 text-[10px]">Tgl Lahir:</span> <span id="ktp-dob" class="text-slate-300"></span></div>
-              <div><span class="text-slate-400 text-[10px]">Jenis Kelamin:</span> <span id="ktp-gender" class="text-slate-300"></span></div>
               <div><span class="text-slate-400 text-[10px]">Kewarganegaraan:</span> <span id="ktp-country" class="text-amber-400 font-medium"></span></div>
               <div><span class="text-slate-400 text-[10px]">Domisili:</span> <span id="ktp-domicile" class="text-slate-300"></span></div>
-              <div><span class="text-slate-400 text-[10px]">Profesi:</span> <span id="ktp-role" class="text-teal-400 font-bold"></span></div>
+              <div><span class="text-slate-400 text-[10px]">Profesi:</span> <span id="ktp-role" class="text-[#f3ba2f] font-bold"></span></div>
             </div>
           </div>
         </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="window.resEat()" class="bg-slate-900 border border-slate-800 py-3 rounded-2xl text-xs font-bold text-teal-400 active:scale-95 transition">🍚 Makan Beras</button>
-          <button onclick="window.resWork()" class="bg-slate-900 border border-slate-800 py-3 rounded-2xl text-xs font-bold text-amber-400 active:scale-95 transition">⚒️ Kerja Shift Harian</button>
-        </div>
       </div>
 
-      <!-- TAB 2: PETA WILAYAH & BANDARA INTERNASIONAL -->
+      <!-- TAB BANDARA -->
       <div id="tab-map" class="hidden space-y-3">
-        <h3 class="text-xs font-bold text-teal-400">✈️ Bandara & Pelabuhan Imigrasi Internasional</h3>
-        <p class="text-[11px] text-slate-400 leading-relaxed">Terbang ke negara lain di dunia untuk urusan diplomasi atau pekerjaan luar negeri (Tiket: $ 45.00 USD).</p>
+        <h3 class="text-xs font-bold text-[#f3ba2f] font-rajdhani">✈️ Bandara & Pelabuhan Imigrasi Internasional</h3>
+        <p class="text-[11px] text-slate-400">Terbang ke negara lain di dunia untuk pekerjaan migran atau diplomasi ($45 USD).</p>
         <div id="airport-nations-list" class="space-y-2"></div>
       </div>
 
-      <!-- TAB 3: BURSA KERJA KOTA -->
+      <!-- TAB BURSA KERJA KOTA -->
       <div id="tab-jobs" class="hidden space-y-3">
-        <h3 class="text-xs font-bold text-slate-300">🏢 Bursa Lowongan Kerja Kota</h3>
+        <h3 class="text-xs font-bold text-[#f3ba2f] font-rajdhani">💼 Bursa Lowongan Kerja Daerah</h3>
         <div id="job-vacancy-list" class="space-y-2"></div>
       </div>
 
-      <!-- TAB 4: LIVE CHAT MULTI-SALURAN -->
-      <div id="tab-chat" class="hidden flex flex-col h-[400px] bg-slate-900/80 border border-slate-800 rounded-3xl p-3">
-        <div class="flex gap-1 border-b border-slate-800 pb-2 mb-2 overflow-x-auto text-[11px]">
-          <button onclick="window.resChangeChatChannel('KOTA')" class="px-2.5 py-1 bg-teal-700 text-white rounded-lg">🏘️ Kota</button>
-          <button onclick="window.resChangeChatChannel('WILAYAH')" class="px-2.5 py-1 bg-slate-800 text-slate-400 rounded-lg">📍 Wilayah</button>
-          <button onclick="window.resChangeChatChannel('NEGARA')" class="px-2.5 py-1 bg-slate-800 text-slate-400 rounded-lg">🇮🇩 Negara</button>
-          <button onclick="window.resChangeChatChannel('GLOBAL')" class="px-2.5 py-1 bg-slate-800 text-slate-400 rounded-lg">🌐 Global</button>
-          <button onclick="window.resChangeChatChannel('JOBDESK')" class="px-2.5 py-1 bg-slate-800 text-slate-400 rounded-lg">🛠️ Profesi</button>
+      <!-- TAB CHAT MULTI-SALURAN -->
+      <div id="tab-chat" class="hidden flex flex-col h-[420px] bg-[#0e1625] border border-[#1e2c44] rounded-3xl p-3">
+        <div class="flex gap-1 border-b border-[#1b263b] pb-2 mb-2 overflow-x-auto text-[11px] font-rajdhani font-bold">
+          <button onclick="window.resChangeChatChannel('KOTA')" class="px-2.5 py-1 bg-[#d4af37] text-black rounded-lg">🏘️ Kota</button>
+          <button onclick="window.resChangeChatChannel('WILAYAH')" class="px-2.5 py-1 bg-[#080c14] text-slate-400 rounded-lg">📍 Wilayah</button>
+          <button onclick="window.resChangeChatChannel('NEGARA')" class="px-2.5 py-1 bg-[#080c14] text-slate-400 rounded-lg">🇮🇩 Negara</button>
+          <button onclick="window.resChangeChatChannel('GLOBAL')" class="px-2.5 py-1 bg-[#080c14] text-slate-400 rounded-lg">🌐 Global</button>
         </div>
         <div id="chat-feed-box" class="flex-1 overflow-y-auto space-y-2 mb-2 pr-1"></div>
         <div class="flex gap-2">
-          <input id="chat-input-text" type="text" placeholder="Ketik pesan..." class="flex-1 bg-slate-950 border border-slate-800 text-xs px-3 py-2 rounded-xl text-white">
-          <button onclick="window.resSendChat()" class="px-4 bg-teal-700 text-white text-xs font-bold rounded-xl active:scale-95 transition">Kirim</button>
+          <input id="chat-input-text" type="text" placeholder="Ketik pesan..." class="flex-1 bg-[#080c14] border border-[#1e2b42] text-xs px-3 py-2 rounded-xl text-white">
+          <button onclick="window.resSendChat()" class="px-4 bg-[#d4af37] text-black text-xs font-rajdhani font-black rounded-xl">Kirim</button>
         </div>
       </div>
 
-      <!-- TAB 5: APBN & PEMERINTAHAN (TERKUNCI KHUSUS PEJABAT) -->
+      <!-- TAB APBN PEMERINTAHAN (PILAR 5) -->
       <div id="tab-gov" class="hidden space-y-3">
         <div id="apbn-panel-container"></div>
       </div>
 
-      <!-- TAB 6: ADMIN TESTER (KHUSUS PENGEMBANG) -->
+      <!-- TAB ADMIN DEVELOPER -->
       <div id="tab-admin" class="hidden space-y-3">
-        <div class="bg-slate-900/90 border border-teal-500/30 p-4 rounded-3xl space-y-3">
-          <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-            <span class="text-xs font-bold text-teal-400">🛠️ PUSAT KONTROL ADMIN</span>
-            <span class="text-[10px] bg-teal-950 text-teal-400 border border-teal-800 px-2 py-0.5 rounded">DEV MODE</span>
+        <div class="bg-[#0e1625] border border-amber-500/40 p-4 rounded-3xl space-y-3">
+          <div class="flex justify-between items-center border-b border-[#1b263b] pb-2">
+            <span class="text-xs font-bold text-[#f3ba2f] font-rajdhani">🛠️ PUSAT KONTROL ADMIN</span>
+            <span class="text-[10px] bg-amber-950 text-amber-400 border border-amber-700 px-2 py-0.5 rounded">DEV MODE</span>
           </div>
-          <p class="text-[11px] text-slate-400">Ubah peran seketika untuk menguji coba fitur Menkeu, Sidang DPR, Gubernur, maupun Panglima TNI:</p>
-          <div id="admin-role-options" class="flex flex-wrap gap-1.5"></div>
-          <button onclick="window.resGrantAdminFunds()" class="w-full py-2 bg-slate-800 hover:bg-slate-750 border border-slate-700 text-teal-300 rounded-xl text-xs font-bold mt-2">
-            💰 Tambah Saldo Rp 1 Miliar & Vitalitas 100%
+          <p class="text-[11px] text-slate-400">Ganti peran seketika untuk menguji coba wewenang Presiden, Menkeu, DPR, atau Gubernur:</p>
+          <div id="admin-role-options" class="flex flex-wrap gap-1.5 font-rajdhani"></div>
+          <button onclick="window.resGrantAdminFunds()" class="w-full py-2 bg-[#162238] border border-amber-400/30 text-amber-300 rounded-xl text-xs font-rajdhani font-bold mt-2">
+            💰 Tambah Saldo Rp 1 Miliar & Pulihkan Vitalitas 100%
           </button>
         </div>
       </div>
 
     </main>
 
-    <!-- BOTTOM NAVIGATION BAR -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900/95 border-t border-slate-800/80 backdrop-blur-md grid grid-cols-6 py-2 text-center text-[9px]">
-      <button onclick="window.resSwitchTab('tab-ktp')" class="flex flex-col items-center text-teal-400">
-        <span class="text-base">🪪</span><span>E-KTP</span>
-      </button>
-      <button onclick="window.resSwitchTab('tab-map')" class="flex flex-col items-center text-slate-400">
-        <span class="text-base">✈️</span><span>Bandara</span>
-      </button>
-      <button onclick="window.resSwitchTab('tab-jobs')" class="flex flex-col items-center text-slate-400">
-        <span class="text-base">💼</span><span>Kerja</span>
-      </button>
-      <button onclick="window.resSwitchTab('tab-chat')" class="flex flex-col items-center text-slate-400">
-        <span class="text-base">💬</span><span>Chat</span>
-      </button>
-      <button onclick="window.resSwitchTab('tab-gov')" class="flex flex-col items-center text-slate-400">
-        <span class="text-base">🏛️</span><span>APBN</span>
-      </button>
-      <button id="btn-tab-admin-nav" onclick="window.resSwitchTab('tab-admin')" class="flex flex-col items-center text-teal-400/70 hidden">
-        <span class="text-base">⚙️</span><span>Admin</span>
-      </button>
-    </nav>
+    <!-- FLOATING STATUS PILL KANAN BAWAH -->
+    <div class="fixed bottom-3 right-3 z-30 bg-[#0c1322]/95 border border-[#25354f] rounded-2xl px-3 py-1.5 flex items-center gap-2 shadow-2xl backdrop-blur-md">
+      <div class="flex items-center gap-1 cursor-pointer" onclick="window.resSwitchTab('tab-chat')">
+        <span class="text-amber-400 text-xs">💬</span>
+        <span class="bg-amber-500 text-black font-rajdhani font-black text-[9px] px-1 rounded-md">+99</span>
+      </div>
+      <div class="h-3 w-px bg-slate-700"></div>
+      <div class="flex items-center gap-1.5 text-xs font-rajdhani font-bold text-[#00e5be]">
+        <span>⚡</span>
+        <span class="text-[10px]">📶</span>
+        <span id="float-energy-val" class="text-white text-[11px]">105/105</span>
+      </div>
+    </div>
 
   </div>
 
   <script type="module" src="src/app.js"></script>
   <script>
-    window.resSwitchAuthMode = (mode) => {
-      const loginSec = document.getElementById("form-login-section");
-      const regSec = document.getElementById("form-register-section");
-      const forgotSec = document.getElementById("form-forgot-section");
-      const resetSec = document.getElementById("form-reset-section");
-      const tabBtns = document.getElementById("auth-tab-buttons");
-      const btnLog = document.getElementById("tab-btn-login");
-      const btnReg = document.getElementById("tab-btn-register");
-
-      loginSec.classList.add("hidden");
-      regSec.classList.add("hidden");
-      forgotSec.classList.add("hidden");
-      resetSec.classList.add("hidden");
-
-      if (mode === 'login') {
-        tabBtns.classList.remove("hidden");
-        loginSec.classList.remove("hidden");
-        btnLog.className = "py-2 rounded-xl bg-teal-700 text-white transition";
-        btnReg.className = "py-2 rounded-xl text-slate-400 transition";
-      } else if (mode === 'register') {
-        tabBtns.classList.remove("hidden");
-        regSec.classList.remove("hidden");
-        btnReg.className = "py-2 rounded-xl bg-teal-700 text-white transition";
-        btnLog.className = "py-2 rounded-xl text-slate-400 transition";
-      } else if (mode === 'forgot') {
-        tabBtns.classList.add("hidden");
-        forgotSec.classList.remove("hidden");
-      } else if (mode === 'reset') {
-        tabBtns.classList.add("hidden");
-        resetSec.classList.remove("hidden");
-      }
-    };
-
-    // Eksekusi Masuk (Login)
     document.getElementById("btn-submit-login").onclick = async () => {
       const { loginPlayer } = await import('./src/auth.js');
       const { initGame } = await import('./src/app.js');
-      
       const email = document.getElementById("login-email").value;
       const pass = document.getElementById("login-pass").value;
-
       const success = await loginPlayer(email, pass);
       if (success) initGame();
     };
 
-    // Eksekusi Lupa Password
-    document.getElementById("btn-submit-forgot").onclick = async () => {
-      const { sendForgotPasswordEmail } = await import('./src/auth.js');
-      const email = document.getElementById("forgot-email").value;
-      const success = await sendForgotPasswordEmail(email);
-      if (success) {
-        window.resSwitchAuthMode('reset');
-      }
-    };
-
-    // Eksekusi Simpan Kata Sandi Baru
-    document.getElementById("btn-submit-reset-pass").onclick = async () => {
-      const { updateNewPassword } = await import('./src/auth.js');
-      const p1 = document.getElementById("reset-new-pass").value;
-      const p2 = document.getElementById("reset-confirm-pass").value;
-
-      if (p1 !== p2) {
-        const { showNotification } = await import('./src/notifications.js');
-        showNotification("Tidak Cocok", "Konfirmasi kata sandi baru tidak cocok!", false);
-        return;
-      }
-
-      const success = await updateNewPassword(p1);
-      if (success) {
-        window.resSwitchAuthMode('login');
-      }
-    };
-
-    // Eksekusi Pendaftaran (E-KTP)
     document.getElementById("btn-submit-registration").onclick = async () => {
       const { registerPlayer } = await import('./src/auth.js');
       const { initGame } = await import('./src/app.js');
-      
-      const genderSelect = document.getElementById("reg-gender");
-      const avatarTypeSelect = document.getElementById("reg-default-avatar-type");
-      const countrySelect = document.getElementById("reg-country");
-      const regionSelect = document.getElementById("reg-region");
-      const citySelect = document.getElementById("reg-city");
-
-      const gender = genderSelect ? genderSelect.value : "Laki-laki";
-      const avatarType = avatarTypeSelect ? avatarTypeSelect.value : "DEFAULT_GENDER";
-      let finalAvatar = (avatarType === "MANUAL_GALLERY" && window.customAvatarData) 
-        ? window.customAvatarData 
-        : (gender === "Perempuan" ? "DEFAULT_FEMALE" : "DEFAULT_MALE");
-
       const success = await registerPlayer({
         username: document.getElementById("reg-name").value,
         email: document.getElementById("reg-email").value,
         password: document.getElementById("reg-pass").value,
-        gender: gender,
-        avatarBase64: finalAvatar,
-        birthDay: document.getElementById("reg-dob-d").value,
-        birthMonth: document.getElementById("reg-dob-m").value,
+        gender: document.getElementById("reg-gender").value,
+        avatarBase64: window.customAvatarData || "",
         birthYear: document.getElementById("reg-dob-y").value,
-        country: countrySelect ? countrySelect.value : "ID",
-        region: regionSelect ? regionSelect.value : "ID-BT",
-        city: citySelect ? citySelect.value : "ID-BT-TNG",
+        birthMonth: 6,
+        birthDay: 15,
+        country: document.getElementById("reg-country").value || "ID",
+        region: document.getElementById("reg-region").value || "ID-BT",
+        city: document.getElementById("reg-city").value || "Tangerang",
         agreedGuidelines: document.getElementById("reg-guidelines").checked
       });
-
       if (success) initGame();
+    };
+
+    document.getElementById("btn-submit-forgot").onclick = async () => {
+      const { sendForgotPasswordEmail } = await import('./src/auth.js');
+      const email = document.getElementById("forgot-email").value;
+      await sendForgotPasswordEmail(email);
+    };
+
+    document.getElementById("btn-submit-reset-pass").onclick = async () => {
+      const { updateNewPassword } = await import('./src/auth.js');
+      const p1 = document.getElementById("reset-new-pass").value;
+      const p2 = document.getElementById("reset-confirm-pass").value;
+      if (p1 !== p2) return;
+      const success = await updateNewPassword(p1);
+      if (success) window.resSwitchAuthMode('login');
     };
   </script>
 </body>
