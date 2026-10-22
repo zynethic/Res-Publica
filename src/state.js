@@ -1,32 +1,57 @@
 // src/state.js
 export const state = {
-  player: JSON.parse(localStorage.getItem("res_publica_player")) || null,
-  isAdminMode: JSON.parse(localStorage.getItem("res_publica_admin_mode")) ?? true, // Default aktif untuk pengembang
+  player: null,
+  isAdminMode: false,
   activeCountry: {
-    code: "ID",
-    name: "Indonesia",
-    currency_code: "IDR",
-    currency_symbol: "Rp",
+    code: 'ID',
+    name: 'Indonesia',
+    currency_code: 'IDR',
+    currency_symbol: 'Rp',
     apbn_balance: 3300000000000000.0,
-    apbn_status: "DISETUJUI_DPR",
+    apbn_status: 'DISETUJUI_DPR',
+    gold_reserves: 1450.0,
     income_tax: 0.10,
-    president: "Belum Terpilih",
-    finance_minister: "Belum Diangkat",
-    dpr_speaker: "Ketua DPR Terpilih"
+    tariff_export: 5.0,
+    tariff_import: 7.5,
+    president: 'Belum Terpilih',
+    finance_minister: 'Belum Diangkat',
+    dpr_speaker: 'Ketua DPR Terpilih'
   },
   activeRegion: {
-    id: "ID-BT",
-    name: "Banten",
+    id: 'ID-BT',
+    name: 'Banten',
     apbd_balance: 380000000000.0,
-    apbd_status: "DISETUJUI_DPRD",
+    apbd_status: 'DISETUJUI_DPRD',
     security_index: 88,
-    primary_commodity: "Baja, Petrokimia & Logistik",
-    governor: "Gubernur Terpilih"
+    primary_commodity: 'Baja, Petrokimia & Logistik',
+    governor: 'Gubernur Terpilih',
+    umr_8h_shift: 185000.0
   },
-  save() {
-    if (this.player) {
-      localStorage.setItem("res_publica_player", JSON.stringify(this.player));
+
+  load() {
+    try {
+      const stored = localStorage.getItem("res_publica_player_parlamentum") || localStorage.getItem("res_publica_player");
+      if (stored) {
+        this.player = JSON.parse(stored);
+      }
+      const adminFlag = localStorage.getItem("res_publica_admin_mode");
+      this.isAdminMode = adminFlag === "true";
+    } catch (e) {
+      console.warn("Gagal memuat penyimpanan lokal", e);
     }
-    localStorage.setItem("res_publica_admin_mode", JSON.stringify(this.isAdminMode));
+  },
+
+  save() {
+    try {
+      if (this.player) {
+        localStorage.setItem("res_publica_player_parlamentum", JSON.stringify(this.player));
+        localStorage.setItem("res_publica_player", JSON.stringify(this.player));
+      }
+      localStorage.setItem("res_publica_admin_mode", this.isAdminMode ? "true" : "false");
+    } catch (e) {
+      console.warn("Gagal menyimpan ke penyimpanan lokal", e);
+    }
   }
 };
+
+state.load();
